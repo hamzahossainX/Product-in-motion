@@ -131,7 +131,6 @@ button { background: none; border: 0; padding: 0; cursor: pointer; }
 }
 
 .t-measure-wide { max-width: calc(940 * var(--screen-unit)); }
-.t-measure { max-width: calc(680 * var(--screen-unit)); }
 .t-measure-narrow { max-width: calc(480 * var(--screen-unit)); }
 
 /* -------------------------------------------------------------- layout ---- */

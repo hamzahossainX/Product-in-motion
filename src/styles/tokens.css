@@ -83,9 +83,10 @@
      alpha variants never re-encode a colour by hand. */
   --color-bg-step-1: #170F0A;
   --color-bg-step-2: #241610;
-  --warm-rgb: 107 66 48;
-  --accent-rgb: 228 115 92;
-  --black-rgb: 14 11 8;
+  --warm-rgb: 107 66 48;         /* --color-bg-warm  #6B4230 */
+  --accent-rgb: 228 115 92;      /* --color-accent   #E4735C */
+  --bg-dark-rgb: 14 11 8;        /* --color-bg-dark  #0E0B08 */
+  --pure-black-rgb: 0 0 0;
 
   /* derived tints — the cream at reduced opacity, so nothing new enters the palette */
   --cream-rgb: 244 234 219;

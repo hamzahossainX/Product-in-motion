@@ -32,7 +32,7 @@
     repeating-linear-gradient(45deg,
       rgb(var(--cream-rgb) / .028) 0 calc(6 * var(--screen-unit)),
       transparent calc(6 * var(--screen-unit)) calc(12 * var(--screen-unit))),
-    radial-gradient(70% 70% at 42% 40%, rgb(var(--warm-rgb) / .34) 0%, rgb(var(--black-rgb) / .5) 100%);
+    radial-gradient(70% 70% at 42% 40%, rgb(var(--warm-rgb) / .34) 0%, rgb(var(--bg-dark-rgb) / .5) 100%);
   overflow: hidden;
 }
 

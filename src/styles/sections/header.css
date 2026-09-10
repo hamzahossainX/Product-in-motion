@@ -9,7 +9,7 @@
   z-index: -1;
   pointer-events: none;
   background: linear-gradient(to bottom,
-    rgb(var(--black-rgb) / .92) 0%, rgb(var(--black-rgb) / .72) 45%, rgb(var(--black-rgb) / 0) 100%);
+    rgb(var(--bg-dark-rgb) / .92) 0%, rgb(var(--bg-dark-rgb) / .72) 45%, rgb(var(--bg-dark-rgb) / 0) 100%);
 }
 
 .site-header {

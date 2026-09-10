@@ -40,7 +40,7 @@
   padding: var(--space-24);
   border: var(--hairline) solid var(--color-rule);
   border-radius: var(--radius);
-  background: rgb(0 0 0 / .22);
+  background: rgb(var(--pure-black-rgb) / .22);
   color: var(--color-text-dim);
   font-family: ui-monospace, 'SFMono-Regular', 'JetBrains Mono', Menlo, Consolas, monospace;
   font-size: var(--sub2);
@@ -74,14 +74,18 @@
    container instead of --screen-unit: the same label rendered at 5.7px on an
    800px screen and 31px at 768, where it also overflowed the SVG box and was
    clipped. As HTML every label is on the type scale and cannot be clipped. */
-.chart { display: flex; flex-direction: column; gap: var(--space-12); }
-
-.chart__row {
+.chart {
   display: grid;
-  grid-template-columns: minmax(0, auto) minmax(0, 1fr) minmax(0, auto);
+  grid-template-columns: minmax(0, max-content) minmax(0, 1fr) minmax(0, max-content);
   align-items: center;
-  gap: var(--space-12);
+  column-gap: var(--space-12);
+  row-gap: var(--space-12);
 }
+
+/* Rows are display:contents so every label, track and value is a direct grid
+   child. One shared column set means one shared baseline for the bars — the
+   whole point of a bar chart. */
+.chart__row { display: contents; }
 
 .chart__label { text-align: right; color: var(--color-text-faint); white-space: nowrap; }
 
@@ -104,7 +108,10 @@
 
 .chart__value { font-variant-numeric: tabular-nums; color: var(--color-text-dim); }
 
+/* The axis belongs to the plot area, not the whole figure, so it sits in the
+   track column and its end labels line up with 0% and 100% of every bar. */
 .chart__axis {
+  grid-column: 2;
   display: flex;
   justify-content: space-between;
   padding-top: var(--space-8);
