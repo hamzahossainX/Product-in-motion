@@ -26,8 +26,7 @@
 .hero__eyebrow > [aria-hidden] { color: var(--color-accent); }
 
 .hero__title {
-  max-width: calc(1180 * var(--screen-unit));
-  text-wrap: balance;
+  max-width: calc(1420 * var(--screen-unit));
 }
 
 .hero__bottom {
@@ -40,16 +39,23 @@
 
 .hero__lede { grid-column: 1 / span 4; }
 
+/* The items are display:contents so every dt and dd is a direct grid child.
+   Without it a label that wraps to two lines pushes only its own value down
+   and the row of figures stops sharing a baseline. */
 .hero__spec {
   grid-column: 7 / span 6;
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: var(--space-16);
+  grid-template-rows: auto auto;
+  column-gap: var(--space-16);
+  row-gap: var(--space-8);
+  align-content: end;
   padding-top: var(--space-16);
   border-top: var(--hairline) solid var(--color-rule);
 }
-.hero__spec-item { display: flex; flex-direction: column; gap: var(--space-8); }
-.hero__spec-item dd { color: var(--color-white); }
+.hero__spec-item { display: contents; }
+.hero__spec dt { grid-row: 1; align-self: start; }
+.hero__spec dd { grid-row: 2; align-self: end; color: var(--color-white); }
 
 .hero__scroll {
   grid-column: 15 / span 2;
@@ -67,11 +73,13 @@
 }
 
 @media (max-width: 768px) {
-  .hero__inner { padding-top: calc(var(--vh) * 22); padding-bottom: var(--space-32); }
-  .hero__eyebrow { flex-wrap: wrap; row-gap: var(--space-4); }
+  .hero__inner { padding-top: calc(var(--vh) * 14); padding-bottom: var(--space-32); }
+  .hero__eyebrow { flex-wrap: wrap; row-gap: var(--space-4); margin-bottom: var(--space-24); }
   .hero__bottom { row-gap: var(--space-24); }
   .hero__lede { grid-column: 1 / -1; }
-  .hero__spec { grid-column: 1 / -1; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .hero__spec { grid-column: 1 / -1; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: auto auto auto auto; }
+  .hero__spec dt { grid-row: auto; }
+  .hero__spec dd { grid-row: auto; margin-bottom: var(--space-8); }
   .hero__scroll { grid-column: 1 / -1; align-items: flex-start; text-align: left; }
   .hero__scroll-rule { height: calc(28 * var(--screen-unit)); }
 }

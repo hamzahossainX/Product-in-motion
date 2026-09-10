@@ -13,10 +13,15 @@
   --vh: 1vh;                                    /* JS overrides on resize */
   --site-padding-x: 3.125vw;                    /* 60px @1920 */
   --inner-width: calc(100vw - var(--site-padding-x) * 2);
-  --screen-unit: min(
+  /* max() floors the unit. A purely linear scale is proportionally correct at
+     every width but reaches ~9px body copy around 1024, which is not readable.
+     The floor engages only between ~769px and ~1240px; at 1440+ and on the
+     short-laptop height branch the min() result always wins, so the guard that
+     stops the composition overflowing a short screen is untouched. */
+  --screen-unit: max(0.69px, min(
     var(--inner-width) / (1920 - 60 * 2),
     calc(var(--vh) * 100) / 1024 * 1.25
-  );
+  ));
   --site-row-height: calc(var(--site-padding-x) * 8 / 60);
   --site-padding-y: calc(var(--site-row-height) * 4);
   --viewport-h: calc(var(--vh) * 100);
@@ -78,8 +83,11 @@
   /* derived tints — the cream at reduced opacity, so nothing new enters the palette */
   --cream-rgb: 244 234 219;
   --color-text:       rgb(var(--cream-rgb));
-  --color-text-dim:   rgb(var(--cream-rgb) / .58);
-  --color-text-faint: rgb(var(--cream-rgb) / .38);
+  /* Alphas are chosen against the page ground, not by eye: .68 -> 7.7:1 and
+     .52 -> 4.9:1, so every label and every line of secondary copy clears WCAG
+     AA (4.5:1) for normal-size text while the three tiers stay distinct. */
+  --color-text-dim:   rgb(var(--cream-rgb) / .68);
+  --color-text-faint: rgb(var(--cream-rgb) / .52);
   --color-rule:       rgb(var(--cream-rgb) / .16);
   --color-rule-soft:  rgb(var(--cream-rgb) / .09);
   --color-fill-soft:  rgb(var(--cream-rgb) / .045);

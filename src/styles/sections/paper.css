@@ -75,14 +75,14 @@
 .paper__bar.is-hero { fill: var(--color-accent); }
 .paper__chart-label text {
   fill: var(--color-text-faint);
-  font-size: 11px;
+  font-size: 8px;
   font-weight: 600;
   letter-spacing: .06em;
   text-transform: uppercase;
 }
 .paper__chart-value text {
   fill: var(--color-black);
-  font-size: 12px;
+  font-size: 9px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
@@ -102,7 +102,7 @@
   .paper__bench { grid-column: 1 / -1; }
   .paper__bench { padding: var(--space-16); }
   .paper__bibtex { padding: var(--space-16); font-size: calc(11 * var(--screen-unit)); }
-  .paper__chart-label text { font-size: 13px; }
-  .paper__chart-value text { font-size: 14px; }
+  .paper__chart-label text { font-size: 15px; }
+  .paper__chart-value text { font-size: 16px; }
   .paper__payoff { margin-top: var(--space-64); }
 }

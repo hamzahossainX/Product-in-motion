@@ -6,7 +6,7 @@
  * scale, contrast-relevant colours, and full-page height.
  */
 import { mkdirSync, writeFileSync } from 'node:fs';
-import { launchChrome, openPage } from './cdp.mjs';
+import { launchChrome, openPage, navigate } from './cdp.mjs';
 
 const VIEWPORTS = [
   { name: '375',      width: 375,  height: 812,  mobile: false, dsf: 2 },
@@ -77,16 +77,7 @@ try {
       width: vp.width, height: vp.height, deviceScaleFactor: vp.dsf,
       mobile: vp.mobile, screenWidth: vp.width, screenHeight: vp.height,
     }, sessionId);
-    const loaded = session.once('Page.loadEventFired');
-    await session.send('Page.navigate', { url }, sessionId);
-    await loaded;
-    // The dev server transforms CSS lazily; give the import graph a beat so a
-    // cold first target never screenshots an unstyled page.
-    await new Promise((r) => setTimeout(r, 400));
-    await session.send('Runtime.evaluate', {
-      expression: 'document.fonts.ready.then(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))))',
-      awaitPromise: true,
-    }, sessionId);
+    await navigate(session, sessionId, url, { expect: "document.querySelectorAll('section').length >= 8" });
 
     const { result } = await session.send('Runtime.evaluate',
       { expression: AUDIT, returnByValue: true }, sessionId);

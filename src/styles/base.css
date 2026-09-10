@@ -85,7 +85,7 @@ button { background: none; border: 0; padding: 0; cursor: pointer; }
 /* --h1 is sized for short display lines. Two headlines on this page are long
    sentences; at 96px on a 375 screen their longest word overflows the measure.
    They step to a display size that fits, still derived from --screen-unit. */
-.t-h1--long { font-size: var(--h1); }
+.t-h1--long { font-size: calc(104 * var(--screen-unit)); line-height: .96; }
 .t-h2 { font-size: var(--h2); line-height: 1.02; letter-spacing: var(--track-h2); font-weight: 600; }
 .t-h3 { font-size: var(--h3); line-height: 1.08; letter-spacing: -.015em; font-weight: 600; }
 .t-h4 { font-size: var(--h4); line-height: 1.15; letter-spacing: -.01em; font-weight: 600; }
@@ -116,7 +116,7 @@ button { background: none; border: 0; padding: 0; cursor: pointer; }
 
 /* Measure caps, in screen-units so they scale with everything else. */
 @media (max-width: 768px) {
-  .t-h1--long { font-size: calc(58 * var(--screen-unit)); line-height: .98; }
+  .t-h1--long { font-size: calc(40 * var(--screen-unit)); line-height: 1.02; }
 }
 
 .t-measure-wide { max-width: calc(940 * var(--screen-unit)); }

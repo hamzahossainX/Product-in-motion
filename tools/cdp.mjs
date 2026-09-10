@@ -73,7 +73,9 @@ export class Session {
         const p = this.#pending.get(msg.id);
         if (!p) return;
         this.#pending.delete(msg.id);
-        msg.error ? p.reject(new Error(`${msg.error.message} (${msg.method ?? ''})`)) : p.resolve(msg.result);
+        msg.error
+          ? p.reject(new Error(`${p.method} failed: ${msg.error.message} ${JSON.stringify(msg.error.data ?? '')}`))
+          : p.resolve(msg.result);
       } else {
         for (const fn of this.#listeners.get(msg.method) ?? []) fn(msg.params);
       }
@@ -87,7 +89,7 @@ export class Session {
   send(method, params = {}, sessionId) {
     const id = ++this.#id;
     return new Promise((resolve, reject) => {
-      this.#pending.set(id, { resolve, reject });
+      this.#pending.set(id, { resolve, reject, method });
       this.#ws.send(JSON.stringify(sessionId ? { id, method, params, sessionId } : { id, method, params }));
     });
   }
@@ -106,6 +108,34 @@ export class Session {
   }
 
   close() { this.#ws.close(); }
+}
+
+/**
+ * Navigate and wait until the document is genuinely ready.
+ * Page.loadEventFired cannot be trusted here: the about:blank target a fresh
+ * page fires its own load event, which resolves the wait before the real
+ * navigation has even started. Poll the document instead.
+ */
+export async function navigate(session, sessionId, url, { expect = 'true', timeoutMs = 30000 } = {}) {
+  await session.send('Page.navigate', { url }, sessionId);
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    try {
+      const { result } = await session.send('Runtime.evaluate', {
+        expression: `document.readyState === 'complete' && Boolean(${expect})`,
+        returnByValue: true,
+      }, sessionId);
+      if (result.value === true) {
+        await session.send('Runtime.evaluate', {
+          expression: 'document.fonts.ready.then(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))))',
+          awaitPromise: true,
+        }, sessionId);
+        return;
+      }
+    } catch { /* context is swapping mid-navigation */ }
+    await sleep(POLL_MS);
+  }
+  throw new Error(`navigation to ${url} never satisfied: ${expect}`);
 }
 
 /** Attach a flat session to a fresh page target. Returns { session, sessionId }. */

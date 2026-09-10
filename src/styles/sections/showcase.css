@@ -12,7 +12,7 @@
 
 .showcase__title {
   margin-top: auto;
-  max-width: calc(1300 * var(--screen-unit));
+  max-width: calc(1200 * var(--screen-unit));
 }
 
 .showcase__stats {
