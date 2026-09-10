@@ -69,22 +69,47 @@
 }
 
 .paper__chart { margin: 0; display: flex; flex-direction: column; gap: var(--space-12); }
-.paper__chart-svg { width: 100%; height: auto; overflow: visible; }
-.paper__axis line { stroke: var(--color-rule); stroke-width: 1; }
-.paper__bar { fill: rgb(var(--cream-rgb) / .22); }
-.paper__bar.is-hero { fill: var(--color-accent); }
-.paper__chart-label text {
-  fill: var(--color-text-faint);
-  font-size: 8px;
-  font-weight: 600;
-  letter-spacing: .06em;
-  text-transform: uppercase;
+
+/* The chart is DOM, not SVG. SVG text inside a viewBox scales with the
+   container instead of --screen-unit: the same label rendered at 5.7px on an
+   800px screen and 31px at 768, where it also overflowed the SVG box and was
+   clipped. As HTML every label is on the type scale and cannot be clipped. */
+.chart { display: flex; flex-direction: column; gap: var(--space-12); }
+
+.chart__row {
+  display: grid;
+  grid-template-columns: minmax(0, auto) minmax(0, 1fr) minmax(0, auto);
+  align-items: center;
+  gap: var(--space-12);
 }
-.paper__chart-value text {
-  fill: var(--color-black);
-  font-size: 9px;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
+
+.chart__label { text-align: right; color: var(--color-text-faint); white-space: nowrap; }
+
+.chart__track {
+  position: relative;
+  height: calc(20 * var(--screen-unit));
+  border-left: var(--hairline) solid var(--color-rule);
+  background: linear-gradient(to right, var(--color-fill-soft), var(--color-fill-soft));
+}
+
+.chart__bar {
+  display: block;
+  height: 100%;
+  background: rgb(var(--cream-rgb) / .22);
+}
+
+.chart__row--hero .chart__label { color: var(--color-text); }
+.chart__row--hero .chart__bar { background: var(--color-accent); }
+.chart__row--hero .chart__value { color: var(--color-accent); }
+
+.chart__value { font-variant-numeric: tabular-nums; color: var(--color-text-dim); }
+
+.chart__axis {
+  display: flex;
+  justify-content: space-between;
+  padding-top: var(--space-8);
+  border-top: var(--hairline) solid var(--color-rule);
+  color: var(--color-text-faint);
 }
 
 .paper__facts { margin-top: var(--space-8); }
@@ -102,7 +127,6 @@
   .paper__bench { grid-column: 1 / -1; }
   .paper__bench { padding: var(--space-16); }
   .paper__bibtex { padding: var(--space-16); font-size: calc(11 * var(--screen-unit)); }
-  .paper__chart-label text { font-size: 15px; }
-  .paper__chart-value text { font-size: 16px; }
+  .chart__label { white-space: normal; }
   .paper__payoff { margin-top: var(--space-64); }
 }

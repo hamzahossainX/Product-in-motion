@@ -176,6 +176,7 @@
               maxlength="64"
               autocomplete="off"
               spellcheck="false"
+              aria-describedby="unlearning-hint"
               placeholder="Type something you regret" />
             <p class="unlearning__hint t-label t-label--dim" id="unlearning-hint">
               Then drag the eraser across it
@@ -287,14 +288,15 @@
             <option value="2" label="Precise 2H"></option>
           </datalist>
 
-          <ul class="hardness__stops" aria-hidden="true">
+          <ul class="hardness__stops">
             <li class="hardness__stop"><span class="t-label">Aggressive</span><span class="t-h5">2B</span></li>
             <li class="hardness__stop is-current"><span class="t-label">Balanced</span><span class="t-h5">HB</span></li>
             <li class="hardness__stop"><span class="t-label">Precise</span><span class="t-h5">2H</span></li>
           </ul>
 
-          <p class="hardness__caption t-label t-label--dim" id="hardness-caption">
-            Graphite transfer model (GTM) &mdash; a visualization, not a warranty
+          <p class="hardness__caption t-caption" id="hardness-caption">
+            <span class="t-caption__term">Graphite Transfer Model (GTM)</span>
+            &mdash; a visualization, not a warranty
           </p>
         </div>
       </div>
@@ -327,7 +329,7 @@
         </li>
       </ul>
 
-      <p class="showcase__note t-body3 t-dim t-measure">
+      <p class="showcase__note t-body1 t-dim">
         There is no telemetry endpoint to disable, no retention policy to read,
         and no vendor to trust. The guarantee is structural: the device cannot
         transmit, because it is rubber.
@@ -352,18 +354,21 @@
         </p>
       </div>
 
-      <div class="configurator__switch" role="group" aria-label="Choose a model">
-        <button class="configurator__option is-selected" type="button" aria-pressed="true" data-variant="base">
+      <div class="configurator__switch" role="radiogroup" aria-label="Choose a model">
+        <button class="configurator__option is-selected" type="button" role="radio" aria-checked="true" data-variant="base">
           <span class="t-h5">ERASER</span>
-          <span class="t-label">Removes what you wrote</span>
+          <span class="configurator__claim">Removes what you wrote.</span>
+          <span class="configurator__dims t-label">65 &times; 23 &times; 12 mm</span>
         </button>
-        <button class="configurator__option" type="button" aria-pressed="false" data-variant="pro">
+        <button class="configurator__option" type="button" role="radio" aria-checked="false" data-variant="pro">
           <span class="t-h5">ERASER Pro</span>
-          <span class="t-label">Removes what you meant</span>
+          <span class="configurator__claim">Removes what you meant.</span>
+          <span class="configurator__dims t-label">90 &times; 32 &times; 16 mm</span>
         </button>
-        <button class="configurator__option" type="button" aria-pressed="false" data-variant="promax">
+        <button class="configurator__option" type="button" role="radio" aria-checked="false" data-variant="promax">
           <span class="t-h5">ERASER Pro Max</span>
-          <span class="t-label">Removes the paper</span>
+          <span class="configurator__claim">Removes the paper.</span>
+          <span class="configurator__dims t-label">140 &times; 50 &times; 25 mm</span>
         </button>
       </div>
 
@@ -429,7 +434,7 @@
           </blockquote>
 
           <h3 class="t-label t-label--accent paper__heading">BibTeX</h3>
-          <pre class="paper__bibtex"><code>@misc{eraser2026,
+          <pre class="paper__bibtex"><code>@misc{eraser1770,
   title  = {ERASER-1: An Open-Weight Model for
             Complete and Verifiable Unlearning},
   author = {Nairne, Edward and Lipman, Hymen and
@@ -441,37 +446,39 @@
           <p class="paper__actions">
             <a class="btn" href="#paper">Paper (PDF)</a>
             <a class="btn" href="#paper">Model (.OBJ)</a>
-            <span class="btn" aria-disabled="true">Code coming soon</span>
+            <button class="btn" type="button" disabled>Code coming soon</button>
           </p>
         </article>
 
         <aside class="paper__bench">
           <h3 class="t-label">EraseBench &mdash; unlearning accuracy</h3>
           <figure class="paper__chart">
-            <svg class="paper__chart-svg" viewBox="0 0 320 200" role="img"
-                 aria-label="Bar chart. ERASER-1 achieves 100 percent unlearning accuracy; gradient ascent 41 percent; fine-tuning 33 percent; refusal training 9 percent.">
-              <g class="paper__axis">
-                <line x1="96" y1="8" x2="96" y2="176" />
-                <line x1="96" y1="176" x2="312" y2="176" />
-              </g>
-              <g class="paper__bars">
-                <rect class="paper__bar is-hero" x="96" y="16"  width="216" height="22" />
-                <rect class="paper__bar"         x="96" y="56"  width="88.6" height="22" />
-                <rect class="paper__bar"         x="96" y="96"  width="71.3" height="22" />
-                <rect class="paper__bar"         x="96" y="136" width="19.4" height="22" />
-              </g>
-              <g class="paper__chart-label">
-                <text x="88" y="32"  text-anchor="end">ERASER-1</text>
-                <text x="88" y="72"  text-anchor="end">Grad. ascent</text>
-                <text x="88" y="112" text-anchor="end">Fine-tune</text>
-                <text x="88" y="152" text-anchor="end">Refusal</text>
-                <text x="96"  y="192">0%</text>
-                <text x="312" y="192" text-anchor="end">100%</text>
-              </g>
-              <g class="paper__chart-value">
-                <text x="304" y="32" text-anchor="end">100.0</text>
-              </g>
-            </svg>
+            <ul class="chart" role="img"
+                aria-label="Bar chart of unlearning accuracy. ERASER-1 100 percent; gradient ascent 41 percent; fine-tuning 33 percent; refusal training 9 percent.">
+              <li class="chart__row chart__row--hero">
+                <span class="chart__label t-label">ERASER-1</span>
+                <span class="chart__track"><span class="chart__bar" style="width:100%"></span></span>
+                <span class="chart__value t-label">100.0</span>
+              </li>
+              <li class="chart__row">
+                <span class="chart__label t-label">Grad. ascent</span>
+                <span class="chart__track"><span class="chart__bar" style="width:41%"></span></span>
+                <span class="chart__value t-label">41.0</span>
+              </li>
+              <li class="chart__row">
+                <span class="chart__label t-label">Fine-tune</span>
+                <span class="chart__track"><span class="chart__bar" style="width:33%"></span></span>
+                <span class="chart__value t-label">33.0</span>
+              </li>
+              <li class="chart__row">
+                <span class="chart__label t-label">Refusal</span>
+                <span class="chart__track"><span class="chart__bar" style="width:9%"></span></span>
+                <span class="chart__value t-label">9.0</span>
+              </li>
+            </ul>
+            <p class="chart__axis t-label">
+              <span>0%</span><span>100%</span>
+            </p>
             <figcaption class="figure-caption t-label">
               <span class="figure-caption__id">Fig. 2</span>
               <span>EraseBench, n=1. Run once, on one desk. Not repeated.</span>
@@ -520,7 +527,8 @@
     </div>
 
     <form class="site-footer__newsletter" id="newsletter">
-      <label class="t-label" for="newsletter-email">Release notes</label>
+      <p class="t-label" aria-hidden="true">Release notes</p>
+      <label class="u-visually-hidden" for="newsletter-email">Email address</label>
       <div class="site-footer__field">
         <input
           class="site-footer__input"
@@ -580,7 +588,7 @@
       <ul class="site-footer__legal-links">
         <li><a class="t-label" href="#footer">Privacy</a></li>
         <li><a class="t-label" href="#footer">Terms</a></li>
-        <li><a class="t-label" href="#footer">&copy; 1770</a></li>
+        <li><span class="t-label">&copy; 1770</span></li>
       </ul>
     </div>
 

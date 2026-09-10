@@ -32,7 +32,7 @@
     repeating-linear-gradient(45deg,
       rgb(var(--cream-rgb) / .028) 0 calc(6 * var(--screen-unit)),
       transparent calc(6 * var(--screen-unit)) calc(12 * var(--screen-unit))),
-    radial-gradient(70% 70% at 42% 40%, rgb(107 66 48 / .34) 0%, rgb(14 11 8 / .5) 100%);
+    radial-gradient(70% 70% at 42% 40%, rgb(var(--warm-rgb) / .34) 0%, rgb(var(--black-rgb) / .5) 100%);
   overflow: hidden;
 }
 
@@ -50,7 +50,7 @@
 .abrasion__crosshair::after {
   content: '';
   position: absolute;
-  background: rgb(228 115 92 / .5);
+  background: rgb(var(--accent-rgb) / .5);
 }
 .abrasion__crosshair::before { left: 50%; top: -20%; width: var(--hairline); height: 140%; }
 .abrasion__crosshair::after { top: 50%; left: -20%; height: var(--hairline); width: 140%; }

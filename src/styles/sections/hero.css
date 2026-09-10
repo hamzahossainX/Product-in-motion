@@ -4,7 +4,7 @@
 
 .section--hero {
   padding-block: 0;
-  min-height: calc(var(--vh) * 100);
+  min-height: var(--viewport-h);
   display: flex;
 }
 
@@ -14,7 +14,7 @@
   justify-content: space-between;
   padding-top: calc(var(--vh) * 15);
   padding-bottom: var(--space-48);
-  min-height: calc(var(--vh) * 100);
+  min-height: var(--viewport-h);
 }
 
 .hero__eyebrow {

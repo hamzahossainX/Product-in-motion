@@ -54,7 +54,7 @@
 }
 .site-footer__col { display: flex; flex-direction: column; gap: var(--space-12); }
 .site-footer__col ul { display: flex; flex-direction: column; gap: var(--space-8); }
-.site-footer__col a { color: var(--color-text-dim); }
+.site-footer__col a { color: var(--color-text-dim); overflow-wrap: anywhere; }
 .site-footer__col a:hover { color: var(--color-accent); }
 
 .site-footer__legal {

@@ -7,6 +7,7 @@ import { spawn } from 'node:child_process';
 import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { createServer } from 'node:net';
 
 const CHROME = process.env.CHROME_BIN ?? 'google-chrome';
 const LAUNCH_TIMEOUT_MS = 20000;
@@ -14,7 +15,21 @@ const POLL_MS = 100;
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-export async function launchChrome(port = 9333 + (process.pid % 500)) {
+/** Ask the OS for a free port. Deriving one from the pid collides across rapid
+ *  sequential runs and attaches to a previous run's dying Chrome. */
+function freePort() {
+  return new Promise((resolve, reject) => {
+    const srv = createServer();
+    srv.on('error', reject);
+    srv.listen(0, '127.0.0.1', () => {
+      const { port } = srv.address();
+      srv.close(() => resolve(port));
+    });
+  });
+}
+
+export async function launchChrome(port) {
+  port = port ?? await freePort();
   const profile = mkdtempSync(join(tmpdir(), 'eraser-cdp-'));
   const proc = spawn(CHROME, [
     '--headless=new',

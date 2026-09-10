@@ -23,7 +23,6 @@
   flex-direction: column;
   gap: var(--space-12);
   margin-top: var(--space-16);
-  counter-reset: step;
 }
 .unlearning__step {
   display: flex;
@@ -56,8 +55,15 @@
   appearance: none;
 }
 .unlearning__input::placeholder { color: var(--color-text-faint); }
+/* The page's signature control. A 1px underline thickening is not a
+   perceivable focus indicator; give it a real ring plus a heavier rule. */
 .unlearning__input:focus { outline: none; }
-.unlearning__input:focus-visible { outline: none; border-bottom-width: calc(2 * var(--hairline)); }
+.unlearning__input:focus-visible {
+  outline: none;
+  border-bottom-width: calc(3 * var(--hairline));
+  box-shadow: 0 0 0 var(--hairline) var(--color-accent);
+  background: rgb(var(--accent-rgb) / .07);
+}
 
 .unlearning__hint { color: var(--color-text-faint); }
 

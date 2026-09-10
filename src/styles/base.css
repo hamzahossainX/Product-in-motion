@@ -49,9 +49,11 @@ body::before {
   z-index: var(--z-canvas);
   pointer-events: none;
   background:
-    radial-gradient(120% 90% at 50% 8%, rgb(107 66 48 / .58) 0%, rgb(107 66 48 / 0) 62%),
-    radial-gradient(90% 70% at 78% 78%, rgb(107 66 48 / .30) 0%, rgb(107 66 48 / 0) 60%),
-    linear-gradient(178deg, var(--color-bg-dark) 0%, #170F0A 46%, #241610 74%, var(--color-bg-dark) 100%);
+    radial-gradient(120% 90% at 50% 8%, rgb(var(--warm-rgb) / .58) 0%, rgb(var(--warm-rgb) / 0) 62%),
+    radial-gradient(90% 70% at 78% 78%, rgb(var(--warm-rgb) / .30) 0%, rgb(var(--warm-rgb) / 0) 60%),
+    linear-gradient(178deg,
+      var(--color-bg-dark) 0%, var(--color-bg-step-1) 46%,
+      var(--color-bg-step-2) 74%, var(--color-bg-dark) 100%);
 }
 
 img, picture, svg, video { display: block; max-width: 100%; }
@@ -88,7 +90,6 @@ button { background: none; border: 0; padding: 0; cursor: pointer; }
 .t-h1--long { font-size: calc(104 * var(--screen-unit)); line-height: .96; }
 .t-h2 { font-size: var(--h2); line-height: 1.02; letter-spacing: var(--track-h2); font-weight: 600; }
 .t-h3 { font-size: var(--h3); line-height: 1.08; letter-spacing: -.015em; font-weight: 600; }
-.t-h4 { font-size: var(--h4); line-height: 1.15; letter-spacing: -.01em; font-weight: 600; }
 .t-h5 { font-size: var(--h5); line-height: 1.2; font-weight: 600; }
 .t-body1 { font-size: var(--body1); line-height: 1.28; font-weight: 400; }
 .t-body2 { font-size: var(--body2); line-height: 1.42; font-weight: 400; }
@@ -109,10 +110,20 @@ button { background: none; border: 0; padding: 0; cursor: pointer; }
 .t-label--accent { color: var(--color-accent); }
 .t-label--dim { color: var(--color-text-dim); }
 
+/* A caption that keeps its own capitalisation. Used where CONCEPT.md specifies
+   a string exactly and .t-label's uppercase transform would shout half of it. */
+.t-caption {
+  font-size: var(--sub2);
+  line-height: 1.45;
+  font-weight: 500;
+  letter-spacing: .01em;
+  color: var(--color-text-dim);
+}
+.t-caption__term { font-weight: 600; color: var(--color-text); }
+
 .t-dim { color: var(--color-text-dim); }
 .t-faint { color: var(--color-text-faint); }
 .t-accent { color: var(--color-accent); }
-.t-wood { color: var(--color-wood); }
 
 /* Measure caps, in screen-units so they scale with everything else. */
 @media (max-width: 768px) {
@@ -140,12 +151,6 @@ button { background: none; border: 0; padding: 0; cursor: pointer; }
   margin-inline: auto;
 }
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
-  column-gap: var(--grid-gap);
-}
-
 /* A section index + title pair, set on a hairline. Used at the head of every
    section so the page reads as a numbered document. */
 .section-marker {
@@ -159,9 +164,6 @@ button { background: none; border: 0; padding: 0; cursor: pointer; }
 .section-marker__index { color: var(--color-accent); }
 .section-marker__title { color: var(--color-text-dim); }
 .section-marker__meta { margin-left: auto; }
-
-.rule { border: 0; border-top: var(--hairline) solid var(--color-rule); margin: 0; }
-.rule--soft { border-top-color: var(--color-rule-soft); }
 
 /* ------------------------------------------------------------ components -- */
 
@@ -182,8 +184,8 @@ button { background: none; border: 0; padding: 0; cursor: pointer; }
 .btn:hover { color: var(--color-black); background: var(--color-white); border-color: var(--color-white); }
 .btn--accent { border-color: var(--color-accent); color: var(--color-accent); }
 .btn--accent:hover { background: var(--color-accent); border-color: var(--color-accent); color: var(--color-black); }
-.btn[aria-disabled='true'] { color: var(--color-text-faint); border-color: var(--color-rule-soft); background: none; cursor: default; }
-.btn[aria-disabled='true']:hover { color: var(--color-text-faint); background: none; border-color: var(--color-rule-soft); }
+.btn:disabled { color: var(--color-text-faint); border-color: var(--color-rule-soft); background: none; cursor: default; }
+.btn:disabled:hover { color: var(--color-text-faint); background: none; border-color: var(--color-rule-soft); }
 
 /* Key/value spec row — the page's most repeated unit. */
 .spec-row {

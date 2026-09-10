@@ -2,7 +2,7 @@
    The widest camera move on the page, so this is the emptiest section. Marker
    at the top edge, title and stats pinned to the bottom, whole middle free.  */
 
-.section--showcase { min-height: calc(var(--vh) * 100); display: flex; }
+.section--showcase { min-height: var(--viewport-h); display: flex; }
 
 .showcase__inner {
   display: flex;
@@ -31,8 +31,10 @@
 }
 .showcase__stat-value { color: var(--color-white); font-weight: 600; }
 
+/* Not a grid item — its parent is the flex column .showcase__inner — so a
+   grid-column here was inert. Width comes from an explicit measure instead. */
 .showcase__note {
-  grid-column: 1 / span 8;
+  max-width: calc(760 * var(--screen-unit));
   margin-top: var(--space-48);
 }
 

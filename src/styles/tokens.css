@@ -79,6 +79,13 @@
   --color-bg-dark: #0E0B08;
   --color-bg-warm: #6B4230;
   --color-preloader: #E8B48A;
+  /* Two intermediate stops for the ground gradient, and channel triples so
+     alpha variants never re-encode a colour by hand. */
+  --color-bg-step-1: #170F0A;
+  --color-bg-step-2: #241610;
+  --warm-rgb: 107 66 48;
+  --accent-rgb: 228 115 92;
+  --black-rgb: 14 11 8;
 
   /* derived tints — the cream at reduced opacity, so nothing new enters the palette */
   --cream-rgb: 244 234 219;
