@@ -1,0 +1,82 @@
+/* ============================================================================
+   engine.css — chrome owned by the frame loop: the scroll indicator, the
+   offscreen-section state, and the ?debug=1 readout.
+   ========================================================================= */
+
+/* Lenis needs the document itself to scroll normally; smooth-scroll behaviour
+   would fight it. */
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-stopped { overflow: hidden; }
+
+/* Taken out of paint and out of the a11y tree without changing layout, so every
+   cached rect stays valid. */
+.is-offscreen { visibility: hidden; }
+
+/* ------------------------------------------------------- scroll indicator -- */
+
+.scroll-indicator {
+  position: fixed;
+  top: var(--space-96);
+  bottom: var(--space-96);
+  right: calc(var(--site-padding-x) / 2);
+  width: calc(14 * var(--screen-unit));
+  z-index: var(--z-indicator);
+  opacity: 0;                 /* driven per frame by ScrollIndicator, not CSS */
+  cursor: grab;
+  touch-action: none;
+}
+.scroll-indicator:active { cursor: grabbing; }
+
+.scroll-indicator::before {
+  content: '';
+  position: absolute;
+  inset: 0 50% 0 50%;
+  width: var(--hairline);
+  transform: translateX(-50%);
+  background: var(--color-rule-soft);
+}
+
+.scroll-indicator__thumb {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: calc(3 * var(--screen-unit));
+  min-height: calc(24 * var(--screen-unit));
+  margin-left: calc(-1.5 * var(--screen-unit));
+  border-radius: 999px;
+  background: var(--color-accent);
+}
+
+@media (max-width: 768px) {
+  .scroll-indicator { display: none; }   /* touch already has a native affordance */
+}
+
+/* ---------------------------------------------------------- debug overlay -- */
+
+.debug-overlay {
+  position: fixed;
+  left: 12px;
+  bottom: 12px;
+  z-index: 9999;
+  pointer-events: none;
+  max-width: 46ch;
+  padding: 10px 12px;
+  border: 1px solid rgb(var(--cream-rgb) / .2);
+  border-radius: 4px;
+  background: rgb(var(--pure-black-rgb) / .82);
+  color: var(--color-white);
+}
+
+.debug-overlay__body {
+  margin: 0;
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  font-size: 11px;
+  line-height: 1.45;
+  white-space: pre;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-indicator { transition: none; }
+}

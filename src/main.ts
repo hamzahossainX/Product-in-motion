@@ -1,13 +1,15 @@
 /**
- * Phase 1 entry point.
+ * Entry point.
  *
- * The only JS this phase permits: keep `--vh` in sync with the real viewport
- * height so `--screen-unit` stays correct when mobile browser chrome collapses.
- * No animation, no scroll engine, no canvas — those arrive in Phases 2 and 3.
+ * Keeps `--vh` in sync with the real viewport height so `--screen-unit` stays
+ * correct when mobile browser chrome collapses, then hands off to the single
+ * frame loop in App. No canvas yet — that arrives in Phase 3.
  */
 import './styles/tokens.css';
 import './styles/base.css';
 import './styles/sections/index.css';
+import './styles/engine.css';
+import { App } from './engine/App.ts';
 
 const VH_PROPERTY = '--vh';
 
@@ -21,3 +23,10 @@ function setViewportUnit(): void {
 setViewportUnit();
 window.addEventListener('resize', setViewportUnit, { passive: true });
 window.addEventListener('orientationchange', setViewportUnit, { passive: true });
+
+const app = new App();
+app.start();
+
+if (import.meta.hot) {
+  import.meta.hot.dispose(() => app.destroy());
+}
