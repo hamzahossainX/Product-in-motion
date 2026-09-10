@@ -1,0 +1,80 @@
+/* ---------------------------------------------------------------- abrasion
+   Object zone: columns 6-9 and everything behind the figure. The zoom box is
+   a real framed aperture in Phase 1; Phase 7 makes it draggable.            */
+
+.abrasion__grid {
+  display: grid;
+  grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+  column-gap: var(--grid-gap);
+  row-gap: var(--space-48);
+  align-items: start;
+}
+
+.abrasion__copy {
+  grid-column: 1 / span 5;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-24);
+}
+
+.abrasion__figure {
+  grid-column: 10 / span 7;
+  grid-row: 1 / span 2;
+  margin: 0;
+}
+
+.abrasion__zoom {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  border: var(--hairline) solid var(--color-rule);
+  border-radius: var(--radius);
+  background:
+    repeating-linear-gradient(45deg,
+      rgb(var(--cream-rgb) / .028) 0 calc(6 * var(--screen-unit)),
+      transparent calc(6 * var(--screen-unit)) calc(12 * var(--screen-unit))),
+    radial-gradient(70% 70% at 42% 40%, rgb(107 66 48 / .34) 0%, rgb(14 11 8 / .5) 100%);
+  overflow: hidden;
+}
+
+.abrasion__crosshair {
+  position: absolute;
+  left: 42%;
+  top: 40%;
+  width: calc(132 * var(--screen-unit));
+  height: calc(132 * var(--screen-unit));
+  transform: translate(-50%, -50%);
+  border: var(--hairline) solid var(--color-accent);
+  border-radius: 50%;
+}
+.abrasion__crosshair::before,
+.abrasion__crosshair::after {
+  content: '';
+  position: absolute;
+  background: rgb(228 115 92 / .5);
+}
+.abrasion__crosshair::before { left: 50%; top: -20%; width: var(--hairline); height: 140%; }
+.abrasion__crosshair::after { top: 50%; left: -20%; height: var(--hairline); width: 140%; }
+
+.abrasion__zoom-label {
+  position: absolute;
+  left: var(--space-16);
+  bottom: var(--space-16);
+  color: var(--color-text-dim);
+}
+
+.abrasion__readouts {
+  grid-column: 1 / span 5;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-12);
+}
+.abrasion__readouts .readout { width: 100%; justify-content: space-between; }
+
+@media (max-width: 768px) {
+  .abrasion__grid { row-gap: var(--space-32); }
+  .abrasion__copy,
+  .abrasion__readouts { grid-column: 1 / -1; }
+  .abrasion__figure { grid-column: 1 / -1; grid-row: auto; }
+  .abrasion__crosshair { width: calc(96 * var(--screen-unit)); height: calc(96 * var(--screen-unit)); }
+}

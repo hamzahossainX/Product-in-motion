@@ -1,0 +1,49 @@
+/* --------------------------------------------------------------- statement
+   Object zone: columns 12-16, the full height of the copy block. The right
+   fifth of the frame is deliberately empty.                                 */
+
+.statement__body {
+  display: grid;
+  grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+  column-gap: var(--grid-gap);
+  row-gap: var(--space-64);
+}
+
+.statement__title {
+  grid-column: 1 / span 10;
+  text-wrap: pretty;
+}
+.statement__title em { font-style: normal; }
+
+.statement__notes {
+  grid-column: 1 / span 8;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-32);
+  padding-top: var(--space-24);
+  border-top: var(--hairline) solid var(--color-rule);
+}
+
+.statement__timeline {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-24);
+  margin-top: var(--space-128);
+  padding-top: var(--space-24);
+  border-top: var(--hairline) solid var(--color-rule);
+}
+.statement__event {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+}
+.statement__event em { font-style: italic; color: var(--color-text); }
+
+@media (max-width: 768px) {
+  .statement__body { row-gap: var(--space-32); }
+  .statement__title { grid-column: 1 / -1; }
+  .statement__notes { grid-column: 1 / -1; grid-template-columns: 1fr; gap: var(--space-16); }
+  .statement__timeline { grid-template-columns: 1fr; margin-top: var(--space-64); gap: var(--space-16); }
+  .statement__event { flex-direction: row; align-items: baseline; gap: var(--space-16); }
+  .statement__event > :first-child { flex: none; width: calc(56 * var(--screen-unit)); }
+}

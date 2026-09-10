@@ -1,0 +1,159 @@
+/* ============================================================================
+   tokens.css — ERASER-1 design system
+   Every dimension on this site derives from --screen-unit. Nothing uses rem,
+   nothing uses clamp() on font-size. See CLAUDE.md rule 13.
+   ========================================================================= */
+
+:root {
+  /* --- fluid scale -------------------------------------------------------
+     min() of a width-derived and a height-derived unit. This is the single
+     line that stops the composition breaking on short laptop screens.
+     N in every calc(N * var(--screen-unit)) below is the raw pixel value
+     from the 1920x1024 design. Do not substitute clamp().                  */
+  --vh: 1vh;                                    /* JS overrides on resize */
+  --site-padding-x: 3.125vw;                    /* 60px @1920 */
+  --inner-width: calc(100vw - var(--site-padding-x) * 2);
+  --screen-unit: min(
+    var(--inner-width) / (1920 - 60 * 2),
+    calc(var(--vh) * 100) / 1024 * 1.25
+  );
+  --site-row-height: calc(var(--site-padding-x) * 8 / 60);
+  --site-padding-y: calc(var(--site-row-height) * 4);
+  --viewport-h: calc(var(--vh) * 100);
+
+  /* --- grid: 16 columns, gap:column = 24:90 ------------------------------
+     16C + 15G = inner, G = C * 24/90  ->  C = inner / 20                   */
+  --grid-columns: 16;
+  --grid-column: calc(var(--inner-width) / 20);
+  --grid-gap: calc(var(--grid-column) * 24 / 90);
+  --grid-span-1:  calc(var(--grid-column) *  1 + var(--grid-gap) *  0);
+  --grid-span-2:  calc(var(--grid-column) *  2 + var(--grid-gap) *  1);
+  --grid-span-3:  calc(var(--grid-column) *  3 + var(--grid-gap) *  2);
+  --grid-span-4:  calc(var(--grid-column) *  4 + var(--grid-gap) *  3);
+  --grid-span-5:  calc(var(--grid-column) *  5 + var(--grid-gap) *  4);
+  --grid-span-6:  calc(var(--grid-column) *  6 + var(--grid-gap) *  5);
+  --grid-span-7:  calc(var(--grid-column) *  7 + var(--grid-gap) *  6);
+  --grid-span-8:  calc(var(--grid-column) *  8 + var(--grid-gap) *  7);
+  --grid-span-9:  calc(var(--grid-column) *  9 + var(--grid-gap) *  8);
+  --grid-span-10: calc(var(--grid-column) * 10 + var(--grid-gap) *  9);
+  --grid-span-11: calc(var(--grid-column) * 11 + var(--grid-gap) * 10);
+  --grid-span-12: calc(var(--grid-column) * 12 + var(--grid-gap) * 11);
+  --grid-span-13: calc(var(--grid-column) * 13 + var(--grid-gap) * 12);
+  --grid-span-14: calc(var(--grid-column) * 14 + var(--grid-gap) * 13);
+  --grid-span-15: calc(var(--grid-column) * 15 + var(--grid-gap) * 14);
+  --grid-span-16: calc(var(--grid-column) * 16 + var(--grid-gap) * 15);
+
+  /* --- type scale (desktop, N @1920) ------------------------------------ */
+  --h1:    calc(164 * var(--screen-unit));
+  --h2:    calc( 68 * var(--screen-unit));
+  --h3:    calc( 45 * var(--screen-unit));
+  --h4:    calc( 32 * var(--screen-unit));
+  --h5:    calc( 20 * var(--screen-unit));
+  --body1: calc( 38 * var(--screen-unit));
+  --body2: calc( 24 * var(--screen-unit));
+  --body3: calc( 18 * var(--screen-unit));
+  --sub1:  calc( 24 * var(--screen-unit));
+  --sub2:  calc( 16 * var(--screen-unit));
+  --quote: calc( 30 * var(--screen-unit));
+  --btn:   calc( 16 * var(--screen-unit));
+  --link-header: calc(16 * var(--screen-unit));
+
+  /* --- palette (CONCEPT.md, verbatim) ------------------------------------
+     Warm, material-derived: paper, graphite, vinyl, cedar. Zero blue,
+     purple, cyan, neon. See CLAUDE.md rule 15.                             */
+  --color-white:      #F4EADB;   /* paper cream — used as "white" */
+  --color-black:      #14100C;   /* graphite black, warm */
+  --color-mid:        #6B6259;   /* pencil graphite grey */
+  --color-deep:       #2E2620;   /* deep graphite */
+  --color-accent:     #E4735C;   /* eraser pink-coral */
+  --color-wood:       #C89A5B;   /* pencil cedar, secondary only */
+  --color-pure-white: #fff;
+  --color-pure-black: #000;
+
+  /* WebGL background gradient — mirrored in CSS until Phase 3 mounts the canvas */
+  --color-bg-dark: #0E0B08;
+  --color-bg-warm: #6B4230;
+  --color-preloader: #E8B48A;
+
+  /* derived tints — the cream at reduced opacity, so nothing new enters the palette */
+  --cream-rgb: 244 234 219;
+  --color-text:       rgb(var(--cream-rgb));
+  --color-text-dim:   rgb(var(--cream-rgb) / .58);
+  --color-text-faint: rgb(var(--cream-rgb) / .38);
+  --color-rule:       rgb(var(--cream-rgb) / .16);
+  --color-rule-soft:  rgb(var(--cream-rgb) / .09);
+  --color-fill-soft:  rgb(var(--cream-rgb) / .045);
+
+  /* --- spacing, all in screen-units -------------------------------------- */
+  --space-2:   calc(  2 * var(--screen-unit));
+  --space-4:   calc(  4 * var(--screen-unit));
+  --space-8:   calc(  8 * var(--screen-unit));
+  --space-12:  calc( 12 * var(--screen-unit));
+  --space-16:  calc( 16 * var(--screen-unit));
+  --space-24:  calc( 24 * var(--screen-unit));
+  --space-32:  calc( 32 * var(--screen-unit));
+  --space-48:  calc( 48 * var(--screen-unit));
+  --space-64:  calc( 64 * var(--screen-unit));
+  --space-96:  calc( 96 * var(--screen-unit));
+  --space-128: calc(128 * var(--screen-unit));
+  --space-160: calc(160 * var(--screen-unit));
+
+  /* --- detail ------------------------------------------------------------- */
+  --hairline: max(1px, calc(1 * var(--screen-unit)));
+  --radius: calc(3 * var(--screen-unit));
+  --track-label: .08em;   /* letter-spacing for small-caps metadata labels */
+  --track-h1: -.025em;
+  --track-h2: -.02em;
+  --z-canvas: 0;
+  --z-content: 1;
+  --z-header: 20;
+  --z-indicator: 30;
+}
+
+/* --- mobile: one breakpoint, 768px. No tablet breakpoint. CLAUDE.md rule 14.
+   --screen-unit is recomputed against a 375x812 base.                       */
+@media (max-width: 768px) {
+  :root {
+    --site-padding-x: calc(16 * 100vw / 375);
+    --inner-width: calc(100vw - var(--site-padding-x) * 2);
+    /* The third term caps growth. Without it a 768-wide screen lands on the
+       mobile scale at ~2x the 375 base and the composition becomes a poster. */
+    --screen-unit: min(
+      var(--inner-width) / (375 - 16 * 2),
+      calc(var(--vh) * 100) / 812 * 1.25,
+      1.25px
+    );
+    --site-row-height: 5px;
+    --site-padding-y: calc(var(--site-row-height) * 4);
+
+    /* 4 columns: 4C + 3G = inner, G = C * 24/90  ->  C = inner / 4.8 */
+    --grid-columns: 4;
+    --grid-column: calc(var(--inner-width) / 4.8);
+    --grid-span-5:  var(--grid-span-4);
+    --grid-span-6:  var(--grid-span-4);
+    --grid-span-7:  var(--grid-span-4);
+    --grid-span-8:  var(--grid-span-4);
+    --grid-span-9:  var(--grid-span-4);
+    --grid-span-10: var(--grid-span-4);
+    --grid-span-11: var(--grid-span-4);
+    --grid-span-12: var(--grid-span-4);
+    --grid-span-13: var(--grid-span-4);
+    --grid-span-14: var(--grid-span-4);
+    --grid-span-15: var(--grid-span-4);
+    --grid-span-16: var(--grid-span-4);
+
+    --h1:    calc( 96 * var(--screen-unit));
+    --h2:    calc( 38 * var(--screen-unit));
+    --h3:    calc( 26 * var(--screen-unit));
+    --h4:    calc( 16 * var(--screen-unit));
+    --h5:    calc( 14 * var(--screen-unit));
+    --body1: calc( 18 * var(--screen-unit));
+    --body2: calc( 16 * var(--screen-unit));
+    --body3: calc( 14 * var(--screen-unit));
+    --sub1:  calc( 16 * var(--screen-unit));
+    --sub2:  calc( 12 * var(--screen-unit));
+    --quote: calc( 28 * var(--screen-unit));
+    --btn:   calc( 10 * var(--screen-unit));
+    --link-header: calc(12 * var(--screen-unit));
+  }
+}

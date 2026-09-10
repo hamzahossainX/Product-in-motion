@@ -1,0 +1,77 @@
+/* -------------------------------------------------------------------- hero
+   Object zone: the centre band. Copy is pinned to the top and bottom edges so
+   the eraser floats through an uninterrupted middle third.                  */
+
+.section--hero {
+  padding-block: 0;
+  min-height: calc(var(--vh) * 100);
+  display: flex;
+}
+
+.hero__inner {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-top: calc(var(--vh) * 15);
+  padding-bottom: var(--space-48);
+  min-height: calc(var(--vh) * 100);
+}
+
+.hero__eyebrow {
+  display: flex;
+  gap: var(--space-12);
+  color: var(--color-text-dim);
+  margin-bottom: var(--space-32);
+}
+.hero__eyebrow > [aria-hidden] { color: var(--color-accent); }
+
+.hero__title {
+  max-width: calc(1180 * var(--screen-unit));
+  text-wrap: balance;
+}
+
+.hero__bottom {
+  display: grid;
+  grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+  column-gap: var(--grid-gap);
+  row-gap: var(--space-32);
+  align-items: end;
+}
+
+.hero__lede { grid-column: 1 / span 4; }
+
+.hero__spec {
+  grid-column: 7 / span 6;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-16);
+  padding-top: var(--space-16);
+  border-top: var(--hairline) solid var(--color-rule);
+}
+.hero__spec-item { display: flex; flex-direction: column; gap: var(--space-8); }
+.hero__spec-item dd { color: var(--color-white); }
+
+.hero__scroll {
+  grid-column: 15 / span 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-12);
+  text-align: right;
+  color: var(--color-text-dim);
+}
+.hero__scroll-rule {
+  width: var(--hairline);
+  height: calc(48 * var(--screen-unit));
+  background: linear-gradient(to bottom, var(--color-accent), transparent);
+}
+
+@media (max-width: 768px) {
+  .hero__inner { padding-top: calc(var(--vh) * 22); padding-bottom: var(--space-32); }
+  .hero__eyebrow { flex-wrap: wrap; row-gap: var(--space-4); }
+  .hero__bottom { row-gap: var(--space-24); }
+  .hero__lede { grid-column: 1 / -1; }
+  .hero__spec { grid-column: 1 / -1; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .hero__scroll { grid-column: 1 / -1; align-items: flex-start; text-align: left; }
+  .hero__scroll-rule { height: calc(28 * var(--screen-unit)); }
+}

@@ -1,0 +1,70 @@
+/* -------------------------------------------------------------- unlearning
+   Object zone: the centre channel, columns 6-11. The camera is locked
+   overhead here and the sheet of paper fills that gap.                      */
+
+.unlearning__grid {
+  display: grid;
+  grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+  column-gap: var(--grid-gap);
+  row-gap: var(--space-48);
+  min-height: calc(var(--vh) * 62);
+  align-items: start;
+}
+
+.unlearning__copy {
+  grid-column: 1 / span 5;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-24);
+}
+
+.unlearning__steps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+  margin-top: var(--space-16);
+  counter-reset: step;
+}
+.unlearning__step {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-16);
+  padding-block: var(--space-12);
+  border-top: var(--hairline) solid var(--color-rule-soft);
+}
+.unlearning__step > :first-child { flex: none; width: calc(72 * var(--screen-unit)); }
+
+.unlearning__panel {
+  grid-column: 12 / span 5;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-32);
+}
+
+.unlearning__field { display: flex; flex-direction: column; gap: var(--space-12); }
+
+.unlearning__input {
+  width: 100%;
+  padding: calc(14 * var(--screen-unit)) 0;
+  font-size: var(--h4);
+  font-weight: 500;
+  color: var(--color-white);
+  background: none;
+  border: 0;
+  border-bottom: var(--hairline) solid var(--color-accent);
+  border-radius: 0;
+  appearance: none;
+}
+.unlearning__input::placeholder { color: var(--color-text-faint); }
+.unlearning__input:focus { outline: none; }
+.unlearning__input:focus-visible { outline: none; border-bottom-width: calc(2 * var(--hairline)); }
+
+.unlearning__hint { color: var(--color-text-faint); }
+
+@media (max-width: 768px) {
+  .unlearning__grid { row-gap: var(--space-32); min-height: 0; }
+  .unlearning__copy,
+  .unlearning__panel { grid-column: 1 / -1; }
+  .unlearning__step > :first-child { width: calc(54 * var(--screen-unit)); }
+  .unlearning__input { font-size: var(--h3); }
+}

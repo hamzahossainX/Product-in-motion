@@ -1,0 +1,108 @@
+/* ------------------------------------------------------------------- paper
+   The page finally breaks character-consistently: this is the only section
+   set as a document. Running measure, figure numbers, monospace metadata.   */
+
+.paper__grid {
+  display: grid;
+  grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+  column-gap: var(--grid-gap);
+  row-gap: var(--space-64);
+  align-items: start;
+}
+
+.paper__doc {
+  grid-column: 1 / span 8;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-16);
+}
+
+.paper__meta { font-variant-numeric: tabular-nums; }
+.paper__title { max-width: calc(720 * var(--screen-unit)); margin-top: var(--space-8); }
+.paper__authors { margin-top: var(--space-8); line-height: 1.55; }
+.paper__authors sup { font-size: .7em; }
+
+.paper__heading { margin-top: var(--space-32); }
+.paper__abstract { max-width: calc(660 * var(--screen-unit)); }
+
+.paper__quote {
+  margin: 0;
+  padding-left: var(--space-24);
+  border-left: var(--hairline) solid var(--color-accent);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+  max-width: calc(620 * var(--screen-unit));
+}
+
+.paper__bibtex {
+  margin: 0;
+  padding: var(--space-24);
+  border: var(--hairline) solid var(--color-rule);
+  border-radius: var(--radius);
+  background: rgb(0 0 0 / .22);
+  color: var(--color-text-dim);
+  font-family: ui-monospace, 'SFMono-Regular', 'JetBrains Mono', Menlo, Consolas, monospace;
+  font-size: var(--sub2);
+  line-height: 1.65;
+  overflow-x: auto;
+}
+
+.paper__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-12);
+  margin-top: var(--space-24);
+}
+
+/* ---- benchmark aside ---- */
+
+.paper__bench {
+  grid-column: 11 / span 6;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-16);
+  padding: var(--space-32);
+  border: var(--hairline) solid var(--color-rule);
+  border-radius: var(--radius);
+  background: var(--color-fill-soft);
+}
+
+.paper__chart { margin: 0; display: flex; flex-direction: column; gap: var(--space-12); }
+.paper__chart-svg { width: 100%; height: auto; overflow: visible; }
+.paper__axis line { stroke: var(--color-rule); stroke-width: 1; }
+.paper__bar { fill: rgb(var(--cream-rgb) / .22); }
+.paper__bar.is-hero { fill: var(--color-accent); }
+.paper__chart-label text {
+  fill: var(--color-text-faint);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.paper__chart-value text {
+  fill: var(--color-black);
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.paper__facts { margin-top: var(--space-8); }
+
+.paper__payoff {
+  margin-top: var(--space-160);
+  padding-top: var(--space-32);
+  border-top: var(--hairline) solid var(--color-rule);
+  text-wrap: pretty;
+}
+
+@media (max-width: 768px) {
+  .paper__grid { row-gap: var(--space-32); }
+  .paper__doc,
+  .paper__bench { grid-column: 1 / -1; }
+  .paper__bench { padding: var(--space-16); }
+  .paper__bibtex { padding: var(--space-16); font-size: calc(11 * var(--screen-unit)); }
+  .paper__chart-label text { font-size: 13px; }
+  .paper__chart-value text { font-size: 14px; }
+  .paper__payoff { margin-top: var(--space-64); }
+}

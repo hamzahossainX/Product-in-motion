@@ -1,0 +1,89 @@
+/* ------------------------------------------------------------ configurator
+   Object zone: columns 8-16 alongside the heading, above the switch. The
+   comparison table is the densest block on the page, so it gets the full
+   width and a lot of air above it.                                          */
+
+.configurator__head {
+  display: grid;
+  grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+  column-gap: var(--grid-gap);
+  row-gap: var(--space-24);
+  min-height: calc(var(--vh) * 34);
+  align-content: start;
+}
+.configurator__head h2 { grid-column: 1 / span 6; }
+.configurator__head p { grid-column: 1 / span 4; }
+
+.configurator__switch {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--grid-gap);
+  margin-top: var(--space-64);
+}
+
+.configurator__option {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-12);
+  padding: var(--space-24);
+  text-align: left;
+  border: var(--hairline) solid var(--color-rule);
+  border-radius: var(--radius);
+  background: var(--color-fill-soft);
+  color: var(--color-text-dim);
+}
+.configurator__option:hover { border-color: var(--color-text-dim); color: var(--color-white); }
+.configurator__option.is-selected {
+  border-color: var(--color-accent);
+  color: var(--color-white);
+  background: rgb(228 115 92 / .08);
+}
+.configurator__option.is-selected .t-label { color: var(--color-accent); }
+
+.configurator__table-wrap { margin-top: var(--space-64); overflow-x: auto; }
+
+.configurator__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--body3);
+  font-variant-numeric: tabular-nums;
+}
+.configurator__table th,
+.configurator__table td {
+  padding: calc(15 * var(--screen-unit)) var(--space-16);
+  text-align: left;
+  vertical-align: baseline;
+  border-bottom: var(--hairline) solid var(--color-rule-soft);
+}
+.configurator__table thead th {
+  padding-bottom: var(--space-16);
+  border-bottom-color: var(--color-rule);
+  color: var(--color-white);
+}
+.configurator__table tbody th {
+  width: 22%;
+  color: var(--color-text-faint);
+  font-weight: 600;
+}
+.configurator__table td { width: 26%; color: var(--color-text); }
+.configurator__table tbody tr:last-child th,
+.configurator__table tbody tr:last-child td { border-bottom: 0; }
+.configurator__table th:first-child,
+.configurator__table td:first-child { padding-left: 0; }
+.configurator__table th:last-child,
+.configurator__table td:last-child { padding-right: 0; }
+
+@media (max-width: 768px) {
+  .configurator__head { min-height: 0; }
+  .configurator__head h2,
+  .configurator__head p { grid-column: 1 / -1; }
+  .configurator__switch { grid-template-columns: 1fr; gap: var(--space-12); margin-top: var(--space-32); }
+  .configurator__option { flex-direction: row; align-items: baseline; justify-content: space-between; gap: var(--space-16); padding: var(--space-16); }
+  .configurator__table-wrap { margin-top: var(--space-32); }
+  .configurator__table { font-size: var(--sub2); }
+  .configurator__table th,
+  .configurator__table td { padding: calc(10 * var(--screen-unit)) var(--space-8); }
+  .configurator__table tbody th { width: 28%; }
+  .configurator__table td { width: 24%; }
+}
