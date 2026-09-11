@@ -47,6 +47,34 @@ async function settle(session, sessionId, frames = 4) {
   `);
 }
 
+/**
+ * Wait until the renderer's drawing buffer matches the viewport it should fill.
+ *
+ * A device-metrics change resizes the CSS viewport immediately, but the
+ * renderer only catches up on its own resize path — and the background gradient
+ * is drawn from `u_aspect`, so a frame read between the two is drawn for the
+ * wrong shape. At y108 that produced a 114px constant run, reproducibly, once
+ * the DPR probe had been through 3840x2160 and back. It looked for all the
+ * world like the dither had stopped working.
+ *
+ * A fixed frame count does not close this: how many frames the resize takes
+ * depends on how loaded the machine is. Wait for the condition instead.
+ */
+async function settleSize(session, sessionId, frames = 8) {
+  for (let attempt = 0; attempt < 120; attempt++) {
+    const ok = await evaluate(session, sessionId, `
+      const r = window.__eraser.render.renderer;
+      const x = Math.round(innerWidth * r.pixelRatio);
+      const y = Math.round(innerHeight * r.pixelRatio);
+      return Math.abs(r.drawingBufferSize.x - x) <= 1 &&
+             Math.abs(r.drawingBufferSize.y - y) <= 1;
+    `);
+    if (ok) break;
+    await settle(session, sessionId, 2);
+  }
+  await settle(session, sessionId, frames);
+}
+
 async function shoot(session, sessionId, clip) {
   const { data } = await session.send('Page.captureScreenshot', {
     format: 'png',
@@ -157,24 +185,43 @@ function bandingReport(img, y) {
  * captures, so sampling more of them does not clear it.
  *
  * `gl.readPixels` on the default framebuffer has no compositor in the path at
- * all: it returns the bytes the final pass wrote. The read is issued inside a
- * `requestAnimationFrame` callback registered after the engine's own loop, so
- * it runs after that frame's render and before the buffer is presented — which
- * is the one window in which the backbuffer is guaranteed valid without
- * `preserveDrawingBuffer`.
+ * all: it returns the bytes the final pass wrote.
+ *
+ * It has one other trap. The renderer is created without
+ * `preserveDrawingBuffer`, so the default framebuffer's contents are undefined
+ * once a frame has been presented — and a `requestAnimationFrame` callback
+ * registered from here is not guaranteed to run *after* the engine's own loop
+ * callback for the same frame. When it ran first it read a discarded buffer,
+ * which came back as a long constant run on whichever row happened to be
+ * sampled: one row of the three, in a different place each run. Exactly what a
+ * broken dither would look like.
+ *
+ * So do not depend on callback order at all. Draw the frame explicitly, with a
+ * zero delta so no clock advances, then finish and read. The bytes are then the
+ * ones this call just produced.
  */
 async function frameBufferRun(session, sessionId, cssY) {
   const row = await evaluate(session, sessionId, `
     return new Promise((resolve) => requestAnimationFrame(() => {
       // render.renderer is this project's wrapper; .gl is the three
       // WebGLRenderer, and .getContext() on that is the WebGL2 context.
-      const three = window.__eraser.render.renderer.gl;
+      const stack = window.__eraser.render;
+      const three = stack.renderer.gl;
       const gl = three.getContext();
+      // Draw now, into the buffer this call is about to read. A dt of 0 renders
+      // the same state rather than advancing the clock, so nothing moves
+      // between the three rows sampled for one measurement.
+      stack.draw(0);
       const w = gl.drawingBufferWidth, h = gl.drawingBufferHeight;
       // readPixels has its origin bottom-left; the CSS row maps proportionally.
       const deviceY = Math.min(h - 1, Math.max(0, Math.round(${cssY} / ${HEIGHT} * h)));
       const pixels = new Uint8Array(w * 4);
       gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+      // Block until the frame is actually finished. Without this the read can
+      // land on a frame the GPU has not completed, which on a contended GPU
+      // returns a row that is part stale — indistinguishable from a plateau,
+      // and it fails the very check this function exists to make.
+      gl.finish();
       gl.readPixels(0, h - 1 - deviceY, w, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
       // The read bound a framebuffer behind three's state cache; hand the
       // renderer back a known-good state so the next frame is unaffected.
@@ -189,7 +236,10 @@ async function frameBufferRun(session, sessionId, cssY) {
     run = row[x] === row[x - 1] ? run + 1 : 1;
     if (run > maxRun) maxRun = run;
   }
-  return maxRun;
+  // The checksum is not a result; it is how the caller tells two readings apart.
+  let checksum = 0;
+  for (let x = 0; x < row.length; x++) checksum = (checksum * 31 + row[x]) >>> 0;
+  return { maxRun, checksum };
 }
 
 async function main() {
@@ -268,7 +318,16 @@ async function main() {
   await session.send('Emulation.setDeviceMetricsOverride', {
     width: WIDTH, height: HEIGHT, deviceScaleFactor: 1, mobile: false,
   }, sessionId);
-  await settle(session, sessionId, 10);
+  // Not a frame count: the renderer has to have actually resized back down from
+  // the 3840x2160 probe above before anything here is worth measuring.
+  //
+  // Then a generous settle on top. Matching buffer sizes is necessary but not
+  // sufficient — a resize re-pins the camera keyframes to the re-measured
+  // sections, and the camera reaches them through second-order springs. Ten
+  // frames left the lower third of the frame still moving, which showed up as
+  // an intermittent 39-77px run at y792 and nowhere else. Sixty frames is about
+  // a second, comfortably past the springs, and this gate is not time-critical.
+  await settleSize(session, sessionId, 60);
 
   // --- 4. banding ---------------------------------------------------------
   await evaluate(session, sessionId, `
@@ -281,26 +340,54 @@ async function main() {
   const rows = [Math.round(HEIGHT * 0.12), Math.round(HEIGHT * 0.5), Math.round(HEIGHT * 0.88)];
 
   const bg = await shoot(session, sessionId, { x: 0, y: 0, width: WIDTH, height: HEIGHT });
-  const ditheredRuns = new Map();
-  for (const y of rows) ditheredRuns.set(y, await frameBufferRun(session, sessionId, y));
   writeFileSync(`${OUT_DIR}/background.png`, Buffer.from(
     (await session.send('Page.captureScreenshot', {
       format: 'png', clip: { x: 0, y: 0, width: WIDTH, height: HEIGHT, scale: 1 },
     }, sessionId)).data, 'base64'));
 
-  // Control: the same frame with the dither switched off. Comparing the two is
-  // the only way to show the dither is what removes the banding, rather than
-  // the gradient happening to be steep enough not to band here.
-  await evaluate(session, sessionId, `window.__eraser.render.setDither(false); return true;`);
-  await settle(session, sessionId, 8);
-  const unditheredRuns = new Map();
-  for (const y of rows) unditheredRuns.set(y, await frameBufferRun(session, sessionId, y));
+  /**
+   * One row, measured with the dither on and then immediately off.
+   *
+   * The control — the same frame with the dither switched off — is the only
+   * thing that shows the dither is what removes the banding, rather than the
+   * gradient happening to be too steep to band here. The two readings are taken
+   * back to back rather than in separate phases, so the scene between them is
+   * as close to identical as it can be.
+   *
+   * They also validate each other. Switching the dither off cannot make a
+   * gradient band *less*, so `undithered >= dithered` is a physical invariant,
+   * not a threshold. A pair that violates it is proof that one of the two reads
+   * did not come back coherent — and after a run of device-metrics overrides,
+   * roughly one read in four does not. Retry those. It is not a way to get a
+   * nicer number: a genuinely broken dither satisfies the invariant easily
+   * (both rows band, dithered >= control is false) and still fails the check
+   * below on the cap.
+   */
+  async function bandingPair(y) {
+    let pair = { dithered: 0, undithered: 0 };
+    for (let attempt = 0; attempt < 6; attempt++) {
+      await evaluate(session, sessionId, `window.__eraser.render.setDither(true); return true;`);
+      await settle(session, sessionId, 3);
+      const on = await frameBufferRun(session, sessionId, y);
+      await evaluate(session, sessionId, `window.__eraser.render.setDither(false); return true;`);
+      await settle(session, sessionId, 3);
+      const off = await frameBufferRun(session, sessionId, y);
+      pair = { dithered: on.maxRun, undithered: off.maxRun };
+      // Two independent proofs that this reading is coherent. Switching the
+      // dither off cannot make a gradient band *less*, so undithered >=
+      // dithered must hold. And toggling it has to change the row at all — an
+      // identical checksum means one read returned the other frame, which is
+      // how a stale read shows up: dithered and undithered both reporting the
+      // control's 179px exactly.
+      if (off.maxRun >= on.maxRun && on.checksum !== off.checksum) break;
+    }
+    return pair;
+  }
+
+  const bandReports = [];
+  for (const y of rows) bandReports.push({ y, ...(await bandingPair(y)) });
   await evaluate(session, sessionId, `window.__eraser.render.setDither(true); return true;`);
   await settle(session, sessionId, 8);
-
-  const bandReports = rows.map((y) => ({
-    y, dithered: ditheredRuns.get(y), undithered: unditheredRuns.get(y),
-  }));
   const worstDithered = Math.max(...bandReports.map((r) => r.dithered));
   const weakestControl = Math.min(...bandReports.map((r) => r.undithered));
   // The cap is a statistic, not a taste call. Triangular dither leaves three
