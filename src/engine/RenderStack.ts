@@ -35,6 +35,20 @@ const ENVIRONMENT_WEIGHT = 220 * 1024;
 const GEOMETRY_WEIGHT = 180 * 1024;
 const CAMERA_BAKE_WEIGHT = 90 * 1024;
 const CAMERA_BAKE_URL = `${import.meta.env.BASE_URL}models/camera-path.json`;
+/**
+ * Whether to go looking for a baked camera path at all.
+ *
+ * There is no bake in the repository yet, and fetching one that is not there
+ * costs a 404 in the console of every visitor. `BakedCameraPath.load` handles
+ * the miss correctly and falls through to the keyframe path, but a failed
+ * request is logged by the browser before any of our code sees it, and this is
+ * a site whose audience opens the console.
+ *
+ * So the seam is opt-in: drop the bake into public/models and set
+ * VITE_CAMERA_BAKE=1. The loader entry stays registered either way, so the
+ * preloader's weighting — and the timing gate 6 measures — does not change.
+ */
+const CAMERA_BAKE_ENABLED = import.meta.env['VITE_CAMERA_BAKE'] === '1';
 
 
 export class RenderStack {
@@ -104,6 +118,7 @@ export class RenderStack {
     this.pathRef = { current: new KeyframeCameraPath(CAMERA_KEYFRAMES) };
     this.rig = new CameraRig(this.pathRef);
     this.loader.add('camera-bake', CAMERA_BAKE_WEIGHT, async () => {
+      if (!CAMERA_BAKE_ENABLED) return;
       const baked = new BakedCameraPath();
       if (await baked.load(CAMERA_BAKE_URL)) this.pathRef.current = baked;
     });
