@@ -1,5 +1,5 @@
 /**
- * Hand-written ACES filmic tonemap (CLAUDE.md rule 11).
+ * Hand-written ACES filmic tonemap (rule 11).
  *
  * The full ACES RRT+ODT fit from Stephen Hill: transform into the AP1-ish
  * working matrix, apply the rational fit, transform back. It is written out

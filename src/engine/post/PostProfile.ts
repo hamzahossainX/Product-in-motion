@@ -4,7 +4,7 @@
  * A profile is a complete set of grading parameters, never a partial one, so
  * that `blend(other, weight)` always has both endpoints and a section that
  * declares only `bloomAmount` still pulls every other parameter toward the
- * default it inherits. That is what makes CLAUDE.md rule 2 work: the frame
+ * default it inherits. That is what makes rule 2 work: the frame
  * starts at DEFAULT_PROFILE and each section blends a partial weight over it,
  * so two overlapping sections cross-fade instead of one winning outright.
  */

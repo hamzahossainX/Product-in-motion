@@ -1,8 +1,8 @@
 /**
  * Reads the interaction state into the scene.
  *
- * The controls write plain data and never touch anything 3D (CLAUDE.md rule
- * 4); this is the one place that data becomes material properties, geometry
+ * The controls write plain data and never touch anything 3D (rule 4); this is
+ * the one place that data becomes material properties, geometry
  * swaps and erase strokes. Everything continuous arrives through a spring, so
  * a slider reads as a control being used rather than a value being set.
  *

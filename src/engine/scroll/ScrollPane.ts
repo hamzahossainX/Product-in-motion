@@ -4,7 +4,7 @@
  * Wraps Lenis and owns the single source of truth for scroll position. Every
  * scroll-linked value in the project reads from here, through a ScrollRange —
  * never from `window.scrollY` directly, and never from ScrollTrigger, which
- * this project does not use (CLAUDE.md rule 7).
+ * this project does not use (rule 7).
  */
 import Lenis from 'lenis';
 

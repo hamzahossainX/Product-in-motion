@@ -150,7 +150,7 @@ button { background: none; border: 0; padding: 0; cursor: pointer; }
   margin-inline: auto;
 }
 
-/* The box the 3D object is locked to inside a section (CLAUDE.md rule 3: the
+/* The box the 3D object is locked to inside a section (rule 3: the
    DOM drives the 3D). Empty, unpainted, out of the a11y tree and out of the
    flow — its only job is to be measured, so that the layout decides where the
    object sits and the copy is never underneath it. Each section overrides the

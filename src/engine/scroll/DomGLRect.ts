@@ -3,7 +3,7 @@
  *
  * DOM measures Y downward from the top of the viewport; GL measures it upward
  * from the bottom. This flip is what lets a 3D object lock exactly to a DOM
- * element's box (CLAUDE.md rule 3: DOM drives 3D, never the reverse), and what
+ * element's box (rule 3: DOM drives 3D, never the reverse), and what
  * a scissor or viewport call needs to be handed.
  *
  * Extends three's Vector4 so it can be fed straight to `setViewport` /

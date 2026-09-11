@@ -2,7 +2,7 @@
  * Masked text reveals, scrubbed by scroll.
  *
  * Every reveal is a paused GSAP timeline whose `progress` is written from a
- * ScrollRange each frame (CLAUDE.md rules 6 and 7 — no ScrollTrigger). A paused
+ * ScrollRange each frame (rules 6 and 7 — no ScrollTrigger). A paused
  * timeline scrubbed by a number is deterministic in both directions, so
  * scrolling back up plays the reveal backwards exactly rather than leaving text
  * stranded, which is what a play-once trigger does.

@@ -5,7 +5,7 @@
  * touch its transform directly — `resetTransform()` wipes it at the top of
  * every frame and sections write partial weighted claims, so two sections
  * overlapping in the viewport cross-fade the object's pose instead of one
- * cutting to the other (CLAUDE.md rule 2).
+ * cutting to the other (rule 2).
  */
 import { Euler, Mesh, MeshStandardMaterial, Object3D, Quaternion, Vector3 } from 'three';
 import { createEraserGeometry } from './geometry/EraserGeometry.ts';

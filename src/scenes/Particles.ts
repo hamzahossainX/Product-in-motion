@@ -7,7 +7,7 @@
  *
  * All motion happens in the vertex shader from a per-instance seed, so the
  * frame loop does nothing per particle: no matrix composition, no attribute
- * upload, and nothing to allocate (CLAUDE.md rule 17).
+ * upload, and nothing to allocate (rule 17).
  */
 import {
   AdditiveBlending, Color, DoubleSide, InstancedBufferAttribute,

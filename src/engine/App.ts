@@ -6,7 +6,7 @@
  * own loop the 3D would trail the DOM by a frame and every DOM-locked element
  * would shear during fast scrolling.
  *
- * The body of `tick` is the reset-then-claim sequence from CLAUDE.md rule 2.
+ * The body of `tick` is the reset-then-claim sequence from rule 2.
  */
 import { ScrollPane } from './scroll/ScrollPane.ts';
 import { ScrollRangeManager, type ScrollRange } from './scroll/ScrollRange.ts';

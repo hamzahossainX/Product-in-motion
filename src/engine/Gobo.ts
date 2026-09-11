@@ -10,7 +10,7 @@
  * cursor would read as a follow-spot; one that swings when the cursor is thrown
  * and settles when it stops reads as a physical fixture on a boom.
  *
- * `reset()` runs at the top of every frame (CLAUDE.md rule 2) and sections
+ * `reset()` runs at the top of every frame (rule 2) and sections
  * blend partial claims over the defaults.
  */
 import {

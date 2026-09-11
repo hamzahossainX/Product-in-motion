@@ -5,8 +5,8 @@
  * usable WebGL context fails at exactly one place: `tryCreate` returns null and
  * the site runs as the static page it was in Phase 1.
  *
- * `draw` is the second half of the reset-then-claim sequence in CLAUDE.md rule
- * 2. The reset and the claims happen in App.tick, above this call.
+ * `draw` is the second half of the reset-then-claim sequence in rule 2. The
+ * reset and the claims happen in App.tick, above this call.
  */
 import { disposeTriangle } from './FboHelper.ts';
 import { CameraController } from './CameraController.ts';

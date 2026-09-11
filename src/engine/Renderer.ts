@@ -2,7 +2,7 @@
  * The one renderer and the one canvas for the whole site.
  *
  * Owns device-pixel-ratio policy. Two limits apply at once: a hard 1.5 clamp
- * (CLAUDE.md rule 9) and a total pixel budget, because a 1.5x 4K display would
+ * (rule 9) and a total pixel budget, because a 1.5x 4K display would
  * otherwise ask for 33M pixels through a six-pass chain.
  */
 import { WebGLRenderer, LinearSRGBColorSpace, NoToneMapping, Vector2 } from 'three';

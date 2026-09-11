@@ -1,7 +1,7 @@
 /**
  * A section whose object position is decided by the layout, not by the scene.
  *
- * CLAUDE.md rule 3: the DOM drives the 3D. Each of these sections has an empty
+ * rule 3: the DOM drives the 3D. Each of these sections has an empty
  * anchor box in its markup, positioned by CSS in whatever part of its grid the
  * copy leaves free; this reads that box's rect and places the eraser inside it.
  * The object therefore tracks exactly through scroll, resize and a change of

@@ -1,7 +1,7 @@
 /**
  * What the controls publish and the scenes read.
  *
- * `sections/` and `scenes/` never import each other (CLAUDE.md rule 4). They
+ * `sections/` and `scenes/` never import each other (rule 4). They
  * share this, and nothing else. It is plain data with no behaviour, written by
  * DOM event handlers and read by the frame loop — which is also the rule that
  * interaction state lives outside the render loop and the loop only reads it.

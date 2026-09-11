@@ -1,5 +1,5 @@
 /**
- * Uniforms every lit material holds by reference (CLAUDE.md rule 19).
+ * Uniforms every lit material holds by reference (rule 19).
  *
  * One object, shared. The gobo mutates `value` in place each frame; nothing
  * copies a uniform per material, so adding a material costs nothing per frame

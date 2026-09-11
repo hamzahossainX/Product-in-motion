@@ -1,7 +1,7 @@
 /* ============================================================================
    tokens.css — ERASER-1 design system
    Every dimension on this site derives from --screen-unit. Nothing uses rem,
-   nothing uses clamp() on font-size. See CLAUDE.md rule 13.
+   nothing uses clamp() on font-size. See rule 13.
    ========================================================================= */
 
 :root {
@@ -65,7 +65,7 @@
 
   /* --- palette (CONCEPT.md, verbatim) ------------------------------------
      Warm, material-derived: paper, graphite, vinyl, cedar. Zero blue,
-     purple, cyan, neon. See CLAUDE.md rule 15.                             */
+     purple, cyan, neon. See rule 15.                             */
   --color-white:      #F4EADB;   /* paper cream — used as "white" */
   --color-black:      #14100C;   /* graphite black, warm */
   --color-mid:        #6B6259;   /* pencil graphite grey */
@@ -133,7 +133,7 @@
   --z-debug: 100;
 }
 
-/* --- mobile: one breakpoint, 768px. No tablet breakpoint. CLAUDE.md rule 14.
+/* --- mobile: one breakpoint, 768px. No tablet breakpoint. rule 14.
    --screen-unit is recomputed against a 375x812 base.                       */
 @media (max-width: 768px) {
   :root {

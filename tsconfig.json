@@ -15,7 +15,7 @@
     "noEmit": true,
     "isolatedModules": true,
 
-    /* Strict — CLAUDE.md rule: TypeScript strict, no `any` */
+    /* Strict — see "Engineering rules" in README.md: TypeScript strict, no `any` */
     "strict": true,
     "noImplicitAny": true,
     "strictNullChecks": true,

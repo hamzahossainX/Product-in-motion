@@ -1,7 +1,7 @@
 /**
  * The custom cursor.
  *
- * Spring-followed, never instant (CLAUDE.md rule 5): a cursor that tracks the
+ * Spring-followed, never instant (rule 5): a cursor that tracks the
  * pointer exactly is the system cursor with extra steps, and the lag is the
  * whole effect. It morphs between states declared on the DOM through
  * `data-cursor`, so a region announces what it affords without a second element

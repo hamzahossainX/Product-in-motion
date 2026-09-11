@@ -2,7 +2,7 @@
  * Putting a 3D object inside a DOM box.
  *
  * Shared by every section that lets the layout decide where its object sits
- * (CLAUDE.md rule 3). The camera's own basis is used rather than an unprojection
+ * (rule 3). The camera's own basis is used rather than an unprojection
  * — it is already orthonormal in the world matrix, so this needs no matrix
  * inverse and allocates nothing.
  */

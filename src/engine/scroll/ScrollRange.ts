@@ -2,7 +2,7 @@
  * Normalised scroll position for a DOM element.
  *
  * Every scroll-linked animation in this project reads a ScrollRange and remaps
- * it with `fit` (CLAUDE.md rule 6). Nothing reads `window.scrollY` directly and
+ * it with `fit` (rule 6). Nothing reads `window.scrollY` directly and
  * nothing measures the DOM inside the frame loop: rects are cached in document
  * space and only re-measured when the content wrapper actually resizes.
  */

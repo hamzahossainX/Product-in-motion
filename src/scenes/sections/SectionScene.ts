@@ -1,7 +1,7 @@
 /**
  * One section's claim on the shared 3D state.
  *
- * `preUpdate` writes PARTIAL WEIGHTED CLAIMS ONLY (CLAUDE.md rule 2). Nothing
+ * `preUpdate` writes PARTIAL WEIGHTED CLAIMS ONLY (rule 2). Nothing
  * here ever sets an absolute value: the frame has already reset the hero, the
  * gobo and the grade to their defaults, and every section blends over that by
  * its own weight. Two sections visible at once therefore cross-fade

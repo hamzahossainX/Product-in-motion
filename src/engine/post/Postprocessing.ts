@@ -1,7 +1,7 @@
 /**
  * The post chain: scene -> TAA -> FXAA -> Bokeh -> Bloom -> Grade+Final.
  *
- * Also the owner of the live grade. CLAUDE.md rule 2 runs through here: the
+ * Also the owner of the live grade. rule 2 runs through here: the
  * frame wipes the profile back to DEFAULT_PROFILE, every section blends a
  * partial weighted claim over it, and syncProfile() pushes the accumulated
  * result into uniforms exactly once, just before drawing.

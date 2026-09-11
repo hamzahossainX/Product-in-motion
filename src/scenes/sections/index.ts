@@ -1,7 +1,7 @@
 /**
  * Builds the section scenes from the measured DOM.
  *
- * `scenes/` and `sections/` never import each other (CLAUDE.md rule 4); they
+ * `scenes/` and `sections/` never import each other (rule 4); they
  * meet here, and all they exchange is a ScrollRange.
  */
 import { SECTIONS } from './sectionData.ts';

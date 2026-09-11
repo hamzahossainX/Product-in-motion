@@ -2,8 +2,8 @@
  * Remapping and clamping helpers.
  *
  * `fit` is the single most-used function in this project: every scroll-linked
- * value in the site is a ScrollRange ratio remapped through it (CLAUDE.md
- * rule 6). Build and trust it first.
+ * value in the site is a ScrollRange ratio remapped through it (rule 6).
+ * Build and trust it first.
  */
 
 /** Constrain `v` to [min, max]. */
@@ -17,7 +17,7 @@ export function saturate(v: number): number {
 }
 
 /** Linear interpolation. Use for pure maths only — never to smooth a value
- *  over time. Smoothed values use SecondOrderDynamics (CLAUDE.md rule 5). */
+ *  over time. Smoothed values use SecondOrderDynamics (rule 5). */
 export function mix(a: number, b: number, t: number): number {
   return a + (b - a) * t;
 }

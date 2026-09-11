@@ -2,7 +2,7 @@
  * Second-order dynamics — a critically-dampable spring.
  *
  * Every smoothed value in this project runs through one of these, never a lerp
- * (CLAUDE.md rule 5). A lerp converges at a rate tied to frame rate and reads
+ * (rule 5). A lerp converges at a rate tied to frame rate and reads
  * as cheap; a spring has mass and momentum and reads as physical.
  *
  * Parameters, all in the constructor as (initialValue, f, z, r):
@@ -59,7 +59,7 @@ export class SpringCoefficients {
  */
 /** Scratch, at module scope. Springs run several times a frame and returning a
  *  fresh object from here was the largest remaining allocation in the loop
- *  (CLAUDE.md rule 17). Not reentrant — every caller reads it out immediately,
+ *  (rule 17). Not reentrant — every caller reads it out immediately,
  *  before anything else can plan. */
 const plan = { step: 0, count: 0, total: 0 };
 

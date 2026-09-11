@@ -6,7 +6,7 @@
  * new frame into a history buffer, reprojecting the history through the depth
  * buffer so a moving camera keeps its accumulated detail instead of smearing.
  *
- * Native MSAA is not an option (CLAUDE.md rule 10) and would not help anyway:
+ * Native MSAA is not an option (rule 10) and would not help anyway:
  * it antialiases geometry edges only, while most of the aliasing here is
  * specular shimmer on the object's bevels, which is a shading problem.
  */
