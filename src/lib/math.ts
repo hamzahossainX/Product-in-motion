@@ -44,39 +44,9 @@ export function fit(
   return outMin + (outMax - outMin) * t;
 }
 
-/** `fit` without clamping — the output runs past the range at both ends. */
-export function unclampedFit(
-  v: number,
-  inMin: number,
-  inMax: number,
-  outMin: number,
-  outMax: number,
-): number {
-  if (inMin === inMax) return outMin;
-  return outMin + (outMax - outMin) * ((v - inMin) / (inMax - inMin));
-}
-
-/**
- * Frame-rate-independent exponential smoothing.
- *
- * A raw `mix(a, b, 0.1)` in a frame loop is tied to frame rate: it converges
- * twice as fast at 120fps as at 60fps. This corrects for `dt`, so `lambda` is
- * a real rate rather than a per-frame fraction. Still prefer a spring for
- * anything the eye will read as motion.
- */
-export function damp(current: number, target: number, lambda: number, dt: number): number {
-  return mix(current, target, 1 - Math.exp(-lambda * dt));
-}
-
 /** Smoothstep over [edge0, edge1]. */
 export function smoothstep(edge0: number, edge1: number, v: number): number {
   const t = saturate(inverseMix(edge0, edge1, v));
   return t * t * (3 - 2 * t);
 }
 
-/** Shortest signed distance from `a` to `b` on a unit-wrapping ring. */
-export function wrap(v: number, min: number, max: number): number {
-  const range = max - min;
-  if (range === 0) return min;
-  return v - range * Math.floor((v - min) / range);
-}

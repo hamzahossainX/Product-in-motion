@@ -57,11 +57,23 @@ export class SpringCoefficients {
  * anticipation impulse once per substep — which sent the spring to 4.9x its
  * target at 8fps before this was separated out.
  */
-function planSteps(dt: number): { step: number; count: number; total: number } {
+/** Scratch, at module scope. Springs run several times a frame and returning a
+ *  fresh object from here was the largest remaining allocation in the loop
+ *  (CLAUDE.md rule 17). Not reentrant — every caller reads it out immediately,
+ *  before anything else can plan. */
+const plan = { step: 0, count: 0, total: 0 };
+
+function planSteps(dt: number): typeof plan {
   const total = Math.min(dt, MAX_TOTAL_DT);
-  if (total <= 0) return { step: 0, count: 0, total: 0 };
+  if (total <= 0) {
+    plan.step = 0; plan.count = 0; plan.total = 0;
+    return plan;
+  }
   const count = Math.max(1, Math.ceil(total / MAX_SUBSTEP));
-  return { step: total / count, count, total };
+  plan.step = total / count;
+  plan.count = count;
+  plan.total = total;
+  return plan;
 }
 
 /** Scalar spring. */
