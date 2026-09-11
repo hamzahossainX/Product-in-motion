@@ -3,12 +3,13 @@
  *
  * Keeps `--vh` in sync with the real viewport height so `--screen-unit` stays
  * correct when mobile browser chrome collapses, then hands off to the single
- * frame loop in App. No canvas yet — that arrives in Phase 3.
+ * frame loop in App.
  */
 import './styles/tokens.css';
 import './styles/base.css';
 import './styles/sections/index.css';
 import './styles/engine.css';
+import './styles/dom-motion.css';
 import { App } from './engine/App.ts';
 
 const VH_PROPERTY = '--vh';
