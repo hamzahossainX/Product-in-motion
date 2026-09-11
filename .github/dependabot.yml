@@ -1,0 +1,24 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    # The dependency set is deliberately tiny and each one is load-bearing, so
+    # review them together rather than as five separate pull requests.
+    groups:
+      runtime:
+        patterns: ['three', '@types/three', 'lenis', 'gsap']
+      build:
+        patterns: ['vite', 'typescript']
+    commit-message:
+      prefix: 'deps'
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: 'ci'

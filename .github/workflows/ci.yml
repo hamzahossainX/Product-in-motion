@@ -1,0 +1,80 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+# A build needs nothing but the checkout.
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: typecheck & build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      # `npm ci`, not `npm install`: it installs the committed lockfile exactly,
+      # so CI builds the tree that was audited rather than a fresh resolution.
+      - name: Install
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Build
+        run: npm run build
+
+      # The bundle budget is part of the spec, so hold CI to it. 400 kB gzipped
+      # is the ceiling; the build currently lands around 208 kB.
+      - name: Check bundle budget
+        run: |
+          set -euo pipefail
+          LIMIT=409600
+          TOTAL=0
+          for f in dist/assets/*.js dist/assets/*.css dist/index.html; do
+            [ -e "$f" ] || continue
+            SIZE=$(gzip -c "$f" | wc -c)
+            TOTAL=$((TOTAL + SIZE))
+            printf '  %-44s %8s B gzipped\n' "$(basename "$f")" "$SIZE"
+          done
+          printf '\n  total %s B against a %s B budget\n' "$TOTAL" "$LIMIT"
+          if [ "$TOTAL" -gt "$LIMIT" ]; then
+            echo "::error::gzipped payload $TOTAL B exceeds the $LIMIT B budget"
+            exit 1
+          fi
+
+      - name: Upload build
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist
+          retention-days: 7
+
+  audit:
+    name: npm audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm audit --audit-level=high
