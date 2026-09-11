@@ -1,23 +1,59 @@
 {
   "name": "eraser-1",
+  "version": "1.0.0",
   "private": true,
-  "version": "0.1.0",
   "type": "module",
-  "description": "ERASER-1 — the only model that can truly forget.",
+  "description": "ERASER-1 — a vinyl eraser marketed with total sincerity as an open-weight AI model. A one-page WebGL site built on three.js, with no render framework and no post-processing library.",
+  "keywords": [
+    "webgl",
+    "threejs",
+    "three",
+    "creative-coding",
+    "postprocessing",
+    "taa",
+    "bloom",
+    "depth-of-field",
+    "aces",
+    "blue-noise",
+    "scrollytelling",
+    "lenis",
+    "gsap",
+    "vite",
+    "typescript",
+    "awwwards",
+    "portfolio",
+    "shaders",
+    "glsl"
+  ],
+  "homepage": "https://github.com/hamzahossainX/Product-in-motion#readme",
+  "bugs": {
+    "url": "https://github.com/hamzahossainX/Product-in-motion/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hamzahossainX/Product-in-motion.git"
+  },
+  "license": "MIT",
+  "author": "Ismail Hossen (@hamzahossainX)",
+  "engines": {
+    "node": ">=20.19"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "typecheck": "tsc --noEmit",
-    "preview": "vite preview"
-  },
-  "devDependencies": {
-    "@types/three": "^0.185.4",
-    "typescript": "~6.0.2",
-    "vite": "^8.2.2"
+    "preview": "vite preview",
+    "preview:gate": "vite preview --port 5178 --strictPort",
+    "gates": "node tools/run-gates.mjs"
   },
   "dependencies": {
     "gsap": "^3.15.0",
     "lenis": "^1.3.26",
     "three": "^0.185.1"
+  },
+  "devDependencies": {
+    "@types/three": "^0.185.4",
+    "typescript": "~6.0.2",
+    "vite": "^8.2.2"
   }
 }
