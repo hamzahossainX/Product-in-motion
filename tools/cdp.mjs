@@ -53,7 +53,9 @@ export async function launchChrome({ port, gpu = false } = {}) {
     `--user-data-dir=${profile}`,
     `--remote-debugging-port=${port}`,
     'about:blank',
-  ], { stdio: ['ignore', 'ignore', 'ignore'] });
+    // detached: Chrome becomes its own process-group leader, which is what
+    // makes the whole tree killable below.
+  ], { stdio: ['ignore', 'ignore', 'ignore'], detached: true });
 
   const deadline = Date.now() + LAUNCH_TIMEOUT_MS;
   let wsUrl = null;
@@ -64,14 +66,37 @@ export async function launchChrome({ port, gpu = false } = {}) {
     } catch { /* not up yet */ }
     await sleep(POLL_MS);
   }
-  if (!wsUrl) { proc.kill('SIGKILL'); throw new Error('Chrome did not expose a debugging port'); }
+  /**
+   * Kill the browser — all of it.
+   *
+   * `proc` is one process; a running Chrome is six or seven. Signalling only
+   * the one it was launched as leaves the GPU process, the zygote and every
+   * renderer alive and reparented to init, and they keep holding the GPU.
+   * Because the child is spawned detached it leads its own process group, so
+   * the negative pid signals the entire group in one call.
+   *
+   * This is not hypothetical: a six-gate sweep leaked twenty-eight processes,
+   * the machine went to a load average of 4.9 on 8 cores, and three
+   * timing-sensitive checks failed that pass individually — which reads exactly
+   * like a performance regression and is not one.
+   */
+  const killGroup = (signal) => {
+    if (proc.pid === undefined) return;
+    try {
+      process.kill(-proc.pid, signal);
+    } catch {
+      // No group (already reaped, or a platform without them): fall back to
+      // the single process rather than throwing out of an exit handler.
+      try { proc.kill(signal); } catch { /* already gone */ }
+    }
+  };
+
+  if (!wsUrl) { killGroup('SIGKILL'); throw new Error('Chrome did not expose a debugging port'); }
 
   // A harness that exits on a failed check never reaches its own close(), and
-  // the browser it started keeps running. Six gates in a row left fifteen of
-  // them competing for the GPU, which then showed up as dropped frames in the
-  // next run and looked exactly like a regression. Exit handlers have to be
-  // synchronous, so this kills rather than asks.
-  const reap = () => { try { proc.kill('SIGKILL'); } catch { /* already gone */ } };
+  // the browser it started keeps running. Exit handlers have to be synchronous,
+  // so this kills rather than asks.
+  const reap = () => killGroup('SIGKILL');
   process.once('exit', reap);
   process.once('SIGINT', () => { reap(); process.exit(130); });
   process.once('uncaughtException', (error) => { reap(); throw error; });
@@ -81,9 +106,9 @@ export async function launchChrome({ port, gpu = false } = {}) {
     port,
     async close() {
       process.off('exit', reap);
-      proc.kill('SIGTERM');
+      killGroup('SIGTERM');
       await sleep(200);
-      proc.kill('SIGKILL');
+      killGroup('SIGKILL');
       try { rmSync(profile, { recursive: true, force: true }); } catch { /* best effort */ }
     },
   };
