@@ -25,3 +25,18 @@ dist-ssr
 
 # Screenshots produced at gates
 /screenshots/
+
+# Working documents — the brief, the spec, the rulebook, the decision log and
+# the phase prompts. These are the private inputs the site was built from, not
+# part of what is published. Keep them locally; they are deliberately untracked.
+CLAUDE.md
+CONCEPT.md
+SPEC.md
+PROGRESS.md
+DECISIONS.md
+oryzo-*.md
+
+# Local environment overrides (.env itself is committed — it holds only the
+# public site URL and no secrets).
+.env.local
+.env.*.local
