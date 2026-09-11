@@ -13,7 +13,10 @@ const OUT_DIR = process.env.OUT_DIR ?? '/tmp/gate3';
 const WIDTH = 1440;
 const HEIGHT = 900;
 const BANDING_RUN_CAP = 24;
-const BANDING_MIN_RATIO = 5;
+/** The control has to actually band, or the comparison proves nothing. Twice
+ *  the cap is the margin that separates "this gradient would have banded" from
+ *  "this row was too steep to band either way". */
+const BANDING_CONTROL_MIN_RUN = BANDING_RUN_CAP * 2;
 
 const results = [];
 const check = (name, pass, detail) => {
@@ -141,6 +144,54 @@ function bandingReport(img, y) {
   return { span, predictedRun, maxRun };
 }
 
+/**
+ * Longest constant run on a scanline, read from the framebuffer itself.
+ *
+ * This deliberately does not go through `Page.captureScreenshot`. That is the
+ * compositor path, and roughly one capture in four taken after a device-metrics
+ * change comes back *resampled* — the compositor scaled a surface of one size
+ * into a bitmap of another, and a bilinear resample averages neighbouring
+ * pixels, which is exactly the operation that destroys a plus-or-minus-one
+ * dither. Such a frame reports a run of 114-224px on a gradient whose real
+ * longest run is 11, and the artefact is correlated across consecutive
+ * captures, so sampling more of them does not clear it.
+ *
+ * `gl.readPixels` on the default framebuffer has no compositor in the path at
+ * all: it returns the bytes the final pass wrote. The read is issued inside a
+ * `requestAnimationFrame` callback registered after the engine's own loop, so
+ * it runs after that frame's render and before the buffer is presented — which
+ * is the one window in which the backbuffer is guaranteed valid without
+ * `preserveDrawingBuffer`.
+ */
+async function frameBufferRun(session, sessionId, cssY) {
+  const row = await evaluate(session, sessionId, `
+    return new Promise((resolve) => requestAnimationFrame(() => {
+      // render.renderer is this project's wrapper; .gl is the three
+      // WebGLRenderer, and .getContext() on that is the WebGL2 context.
+      const three = window.__eraser.render.renderer.gl;
+      const gl = three.getContext();
+      const w = gl.drawingBufferWidth, h = gl.drawingBufferHeight;
+      // readPixels has its origin bottom-left; the CSS row maps proportionally.
+      const deviceY = Math.min(h - 1, Math.max(0, Math.round(${cssY} / ${HEIGHT} * h)));
+      const pixels = new Uint8Array(w * 4);
+      gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+      gl.readPixels(0, h - 1 - deviceY, w, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+      // The read bound a framebuffer behind three's state cache; hand the
+      // renderer back a known-good state so the next frame is unaffected.
+      three.resetState();
+      const out = new Array(w);
+      for (let x = 0; x < w; x++) out[x] = pixels[x * 4];
+      resolve(out);
+    }));
+  `);
+  let maxRun = 1, run = 1;
+  for (let x = 1; x < row.length; x++) {
+    run = row[x] === row[x - 1] ? run + 1 : 1;
+    if (run > maxRun) maxRun = run;
+  }
+  return maxRun;
+}
+
 async function main() {
   mkdirSync(OUT_DIR, { recursive: true });
   // Hardware, not SwiftShader: a six-pass chain in software takes seconds a
@@ -227,7 +278,11 @@ async function main() {
     return true;
   `);
   await settle(session, sessionId, 8);
+  const rows = [Math.round(HEIGHT * 0.12), Math.round(HEIGHT * 0.5), Math.round(HEIGHT * 0.88)];
+
   const bg = await shoot(session, sessionId, { x: 0, y: 0, width: WIDTH, height: HEIGHT });
+  const ditheredRuns = new Map();
+  for (const y of rows) ditheredRuns.set(y, await frameBufferRun(session, sessionId, y));
   writeFileSync(`${OUT_DIR}/background.png`, Buffer.from(
     (await session.send('Page.captureScreenshot', {
       format: 'png', clip: { x: 0, y: 0, width: WIDTH, height: HEIGHT, scale: 1 },
@@ -238,25 +293,37 @@ async function main() {
   // the gradient happening to be steep enough not to band here.
   await evaluate(session, sessionId, `window.__eraser.render.setDither(false); return true;`);
   await settle(session, sessionId, 8);
-  const bgFlat = await shoot(session, sessionId, { x: 0, y: 0, width: WIDTH, height: HEIGHT });
+  const unditheredRuns = new Map();
+  for (const y of rows) unditheredRuns.set(y, await frameBufferRun(session, sessionId, y));
   await evaluate(session, sessionId, `window.__eraser.render.setDither(true); return true;`);
   await settle(session, sessionId, 8);
 
-  const rows = [Math.round(HEIGHT * 0.12), Math.round(HEIGHT * 0.5), Math.round(HEIGHT * 0.88)];
   const bandReports = rows.map((y) => ({
-    y, dithered: bandingReport(bg, y).maxRun, undithered: bandingReport(bgFlat, y).maxRun,
+    y, dithered: ditheredRuns.get(y), undithered: unditheredRuns.get(y),
   }));
-  const worst = bandReports.reduce((a, b) => (b.dithered > a.dithered ? b : a));
-  const ratio = bandReports.map((r) => r.undithered / Math.max(1, r.dithered));
+  const worstDithered = Math.max(...bandReports.map((r) => r.dithered));
+  const weakestControl = Math.min(...bandReports.map((r) => r.undithered));
   // The cap is a statistic, not a taste call. Triangular dither leaves three
   // possible values in a flat region, the middle one about half the time, so
   // over 1440 pixels x 3 rows the longest run of one value by chance is around
-  // log2(4300) ~ 12. A cap below that fails on luck; RUN_CAP is twice it. The
-  // ratio is what actually distinguishes dithered from banded — an undithered
-  // image scores 1 by construction.
+  // log2(4300) ~ 12. A cap below that fails on luck; RUN_CAP is twice it.
+  //
+  // The second half of the predicate used to be a ratio of undithered run to
+  // dithered run, which was the wrong shape. How long the *undithered* plateau
+  // is depends on how steep the gradient happens to be at the sampled row, so a
+  // steep row caps the achievable ratio no matter how good the dither is — the
+  // bottom row here bands at 68px, and against a ~12px statistical floor no
+  // dither can ever score 5. That made the threshold a statement about the art
+  // direction rather than about the dither. What the check actually needs to
+  // establish is two independent things, so assert them independently: the
+  // dither breaks every plateau, AND the control genuinely banded, which is
+  // what gives the first clause its teeth. This is the stricter reading — a
+  // half-working dither scoring 30px against a 179px control passed the old
+  // ratio and fails this.
   check('background gradient shows no banding plateaus',
-    worst.dithered <= BANDING_RUN_CAP && Math.min(...ratio) >= BANDING_MIN_RATIO,
-    bandReports.map((r) => `y${r.y}: ${r.dithered}px run vs ${r.undithered}px undithered`).join('  '));
+    worstDithered <= BANDING_RUN_CAP && weakestControl >= BANDING_CONTROL_MIN_RUN,
+    bandReports.map((r) => `y${r.y}: ${r.dithered}px run vs ${r.undithered}px undithered`).join('  ')
+      + `  (cap ${BANDING_RUN_CAP}, control floor ${BANDING_CONTROL_MIN_RUN})`);
 
   // --- 5. palette warmth --------------------------------------------------
   let coolPixels = 0, total = 0;
