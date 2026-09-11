@@ -11,9 +11,20 @@
   <meta property="og:type" content="website" />
   <meta property="og:title" content="ERASER-1 — The only model that can truly forget." />
   <meta property="og:description" content="An open-weight vinyl model achieving 100% unlearning accuracy on EraseBench." />
+  <meta property="og:url" content="https://eraser-1.example/" />
+  <meta property="og:site_name" content="ERASER-1" />
+  <meta property="og:image" content="https://eraser-1.example/og.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="A vinyl eraser lit on a sheet of paper, beside the headline: Small enough to hold. Powerful enough to forget." />
   <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="ERASER-1 — The only model that can truly forget." />
+  <meta name="twitter:description" content="An open-weight vinyl model achieving 100% unlearning accuracy on EraseBench." />
+  <meta name="twitter:image" content="https://eraser-1.example/og.png" />
   <link rel="preload" href="/fonts/GeneralSans-Variable.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <link rel="manifest" href="/site.webmanifest" />
 </head>
 <body>
 
@@ -47,6 +58,11 @@
         </p>
         <h1 class="hero__title t-h1 t-h1--long">Small enough to hold.<br />Powerful enough to&nbsp;forget.</h1>
       </div>
+
+      <!-- The box the 3D object is locked to. Empty and hidden from the a11y
+           tree: it exists so the layout decides where the eraser sits, not the
+           renderer. -->
+      <div class="hero__object" id="hero-object-anchor" data-gl-anchor="hero" aria-hidden="true"></div>
 
       <div class="hero__bottom">
         <p class="hero__lede t-body2 t-measure-narrow">
@@ -85,6 +101,7 @@
   <!-- 2 ────────────────────────────────────────────────────── STATEMENT -->
   <section class="section section--statement" id="statement">
     <div class="section__inner">
+      <div class="section__object" id="statement-object-anchor" data-gl-anchor="statement" aria-hidden="true"></div>
       <p class="section-marker t-label">
         <span class="section-marker__index">01</span>
         <span class="section-marker__title">Statement</span>
@@ -141,6 +158,10 @@
         <span class="section-marker__meta">Live demonstration</span>
       </p>
 
+      <!-- The surface the eraser is dragged across. It carries the pointer
+           interaction and doubles as the box the 3D sheet is locked to. -->
+      <div class="unlearning__sheet" id="unlearning-sheet" data-gl-anchor="unlearning" data-cursor="erase" aria-hidden="true"></div>
+
       <div class="unlearning__grid">
         <div class="unlearning__copy">
           <h2 class="t-h2">Complete and verifiable unlearning</h2>
@@ -170,7 +191,7 @@
             <label class="t-label" for="unlearning-input">Input sequence</label>
             <input
               class="unlearning__input"
-              id="unlearning-input"
+              id="unlearning-input" data-cursor="type"
               name="unlearning-input"
               type="text"
               maxlength="64"
@@ -181,6 +202,11 @@
             <p class="unlearning__hint t-label t-label--dim" id="unlearning-hint">
               Then drag the eraser across it
             </p>
+            <!-- The drag surface is a pointer affordance with no keyboard
+                 equivalent, so the same operation is also a button. -->
+            <button class="btn unlearning__erase" type="button" id="unlearning-erase">
+              Erase it
+            </button>
           </div>
 
           <dl class="unlearning__readouts">
@@ -225,7 +251,7 @@
         </div>
 
         <figure class="abrasion__figure">
-          <div class="abrasion__zoom" id="abrasion-zoom-box" aria-hidden="true">
+          <div class="abrasion__zoom" id="abrasion-zoom-box" data-cursor="drag" aria-hidden="true">
             <span class="abrasion__crosshair"></span>
             <span class="abrasion__zoom-label t-label">Drag to inspect</span>
           </div>
@@ -256,6 +282,7 @@
   <!-- 5 ─────────────────────────────────────────────────────── HARDNESS -->
   <section class="section section--hardness" id="hardness">
     <div class="section__inner">
+      <div class="section__object" id="hardness-object-anchor" data-gl-anchor="hardness" aria-hidden="true"></div>
       <p class="section-marker t-label">
         <span class="section-marker__index">04</span>
         <span class="section-marker__title">Hardness</span>
@@ -276,7 +303,7 @@
           <label class="t-label" for="hardness-slider">Graphite grade</label>
           <input
             class="hardness__slider"
-            id="hardness-slider"
+            id="hardness-slider" data-cursor="drag"
             name="hardness-slider"
             type="range"
             min="0" max="2" step="1" value="1"
@@ -294,6 +321,11 @@
             <li class="hardness__stop"><span class="t-label">Precise</span><span class="t-h5">2H</span></li>
           </ul>
 
+          <p class="hardness__readout t-label">
+            <span>Abrasion coefficient</span>
+            <output id="hardness-readout" for="hardness-slider">0.62</output>
+          </p>
+
           <p class="hardness__caption t-caption" id="hardness-caption">
             <span class="t-caption__term">GRAPHITE TRANSFER MODEL (GTM)</span>
             &mdash; a visualization, not a warranty
@@ -306,6 +338,7 @@
   <!-- 6 ─────────────────────────────────────────────────────── SHOWCASE -->
   <section class="section section--showcase" id="showcase">
     <div class="section__inner showcase__inner">
+      <div class="section__object" id="showcase-object-anchor" data-gl-anchor="showcase" aria-hidden="true"></div>
       <p class="section-marker t-label">
         <span class="section-marker__index">05</span>
         <span class="section-marker__title">Retention</span>
@@ -340,6 +373,7 @@
   <!-- 7 ─────────────────────────────────────────────────── CONFIGURATOR -->
   <section class="section section--configurator" id="configurator">
     <div class="section__inner">
+      <div class="section__object" id="configurator-object-anchor" data-gl-anchor="configurator" aria-hidden="true"></div>
       <p class="section-marker t-label">
         <span class="section-marker__index">06</span>
         <span class="section-marker__title">Model family</span>
@@ -401,6 +435,7 @@
   <!-- 8 ────────────────────────────────────────────────────────── PAPER -->
   <section class="section section--paper" id="paper">
     <div class="section__inner">
+      <div class="section__object" id="paper-object-anchor" data-gl-anchor="paper" aria-hidden="true"></div>
       <p class="section-marker t-label">
         <span class="section-marker__index">07</span>
         <span class="section-marker__title">Paper</span>
