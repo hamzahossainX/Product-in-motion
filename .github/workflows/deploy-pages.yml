@@ -1,0 +1,59 @@
+name: Deploy to GitHub Pages
+
+# Manual by default. GitHub Pages is the fallback host here, not the primary
+# one — see the Deployment section of the README — so this does not fire on
+# every push. Flip `push:` on if you want Pages to track main.
+on:
+  workflow_dispatch:
+  # push:
+  #   branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Never run two deployments at once, and never cancel one half-way: a partial
+# upload would leave the live site serving a mixed asset set.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      # A Pages project site is served from /<repo>/, so every hashed asset URL
+      # needs that prefix — and the canonical and og: tags need the full origin
+      # built from the same pair. Both come from the environment; nothing is
+      # hard-coded in the source.
+      - name: Build for the Pages subpath
+        env:
+          BASE_PATH: /${{ github.event.repository.name }}/
+          VITE_SITE_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
+        run: npm run build
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
