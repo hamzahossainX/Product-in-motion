@@ -1,0 +1,68 @@
+name: Bug report
+description: Something renders wrong, behaves wrong, or falls over.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time. The single most useful thing you can include
+        is a screenshot — this is a rendering project, and "the bloom is wrong"
+        is very hard to act on without a picture.
+
+        If it is a security issue, please close this and use
+        [private reporting](../security/advisories/new) instead.
+
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: And what you expected instead.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open the site at 1440x900
+        2. Scroll to the hardness section
+        3. Drag the slider to 2H
+    validations:
+      required: true
+
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and version
+      placeholder: Chrome 141 / Firefox 155 / Safari 18.2
+    validations:
+      required: true
+
+  - type: input
+    id: gpu
+    attributes:
+      label: GPU
+      description: >
+        Open chrome://gpu (or about:support in Firefox) and paste the renderer
+        string. Nearly every rendering bug is GPU-specific.
+      placeholder: ANGLE (AMD, Vulkan 1.4 (AMD Radeon Vega 10 Graphics (RADV RAVEN)), radv)
+
+  - type: input
+    id: viewport
+    attributes:
+      label: Viewport size and device pixel ratio
+      placeholder: 1440x900 @ 2x
+
+  - type: textarea
+    id: console
+    attributes:
+      label: Console output
+      description: Anything logged, especially WebGL warnings.
+      render: shell
+
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: Screenshot or capture
+      description: Drag an image in. For motion problems, a short screen recording.

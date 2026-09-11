@@ -1,0 +1,30 @@
+name: Idea or improvement
+description: Suggest something — a section, an interaction, a technique.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: The idea
+    validations:
+      required: true
+
+  - type: textarea
+    id: why
+    attributes:
+      label: Why it belongs here
+      description: >
+        The site is held to a fixed creative brief and a hard dependency budget.
+        An idea that needs a fourth runtime dependency has to be worth it — say
+        why.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: constraints
+    attributes:
+      label: Constraints
+      options:
+        - label: This needs no new runtime dependency
+        - label: This keeps the palette warm (no blue, purple, cyan or neon gradient)
+        - label: This can be measured by a gate harness
