@@ -28,12 +28,20 @@ function freePort() {
   });
 }
 
-export async function launchChrome(port) {
+/**
+ * `gpu: true` puts the render on the real device. Layout and pixel checks are
+ * identical either way, but a frame time measured on SwiftShader says nothing
+ * about whether the site holds 60fps, so the perf harness asks for hardware.
+ */
+export async function launchChrome({ port, gpu = false } = {}) {
   port = port ?? await freePort();
   const profile = mkdtempSync(join(tmpdir(), 'eraser-cdp-'));
   const proc = spawn(CHROME, [
     '--headless=new',
-    '--disable-gpu',
+    ...(gpu
+      ? ['--enable-gpu', '--use-angle=vulkan', '--enable-features=Vulkan',
+         '--ignore-gpu-blocklist', '--enable-gpu-rasterization']
+      : ['--disable-gpu']),
     '--no-sandbox',
     '--no-first-run',
     '--no-default-browser-check',
@@ -58,10 +66,21 @@ export async function launchChrome(port) {
   }
   if (!wsUrl) { proc.kill('SIGKILL'); throw new Error('Chrome did not expose a debugging port'); }
 
+  // A harness that exits on a failed check never reaches its own close(), and
+  // the browser it started keeps running. Six gates in a row left fifteen of
+  // them competing for the GPU, which then showed up as dropped frames in the
+  // next run and looked exactly like a regression. Exit handlers have to be
+  // synchronous, so this kills rather than asks.
+  const reap = () => { try { proc.kill('SIGKILL'); } catch { /* already gone */ } };
+  process.once('exit', reap);
+  process.once('SIGINT', () => { reap(); process.exit(130); });
+  process.once('uncaughtException', (error) => { reap(); throw error; });
+
   return {
     wsUrl,
     port,
     async close() {
+      process.off('exit', reap);
       proc.kill('SIGTERM');
       await sleep(200);
       proc.kill('SIGKILL');
