@@ -19,6 +19,14 @@ const HOLD_SECONDS = 0.5;
 const MOVEMENT_EPSILON = 0.05;
 /** Thumb never shrinks below this fraction of the track, however long the page. */
 const MIN_THUMB_RATIO = 0.06;
+/** Smaller than the third decimal place every style write is rounded to. */
+const WRITE_EPSILON = 0.0005;
+
+/** Below three decimal places nothing written above would render differently,
+ *  and NaN on the first frame always differs, which forces the initial write. */
+function differs(next: number, written: number): boolean {
+  return !(Math.abs(next - written) < WRITE_EPSILON);
+}
 
 export class ScrollIndicator {
   private readonly root: HTMLElement;
@@ -28,6 +36,12 @@ export class ScrollIndicator {
   private opacity = 0;
   private idleTime = 0;
   private dragging = false;
+
+  /** Last values actually written to the DOM, so an unchanged frame is free. */
+  private writtenOpacity = Number.NaN;
+  private writtenThumbRatio = Number.NaN;
+  private writtenOffset = Number.NaN;
+  private writtenInteractive: boolean | null = null;
   private pointerId: number | null = null;
   private dragOffset = 0;
 
@@ -96,7 +110,12 @@ export class ScrollIndicator {
     this.pane.scrollTo(this.pane.limit * (local / travel), true);
   }
 
-  /** Advance opacity and thumb geometry. Called once per frame. */
+  /** Advance opacity and thumb geometry. Called once per frame.
+   *
+   *  Every write below builds a string, and a string a frame is the only
+   *  allocation left in the loop once the 3D side is using scratch objects.
+   *  So each value is compared against what was last written and skipped when
+   *  it has not moved — which on a still page is all four of them. */
   update(dt: number): void {
     const moving = Math.abs(this.pane.scrollViewDelta) > MOVEMENT_EPSILON;
     if (moving || this.dragging) this.idleTime = 0;
@@ -107,16 +126,36 @@ export class ScrollIndicator {
     // loop's control so velocity can drive it in a later phase.
     const rate = wantVisible ? FADE_IN_RATE : -FADE_OUT_RATE;
     this.opacity = clamp(this.opacity + rate * dt, 0, 1);
-    this.root.style.opacity = this.opacity.toFixed(3);
-    this.root.style.pointerEvents = this.opacity > 0.01 ? 'auto' : 'none';
+
+    if (differs(this.opacity, this.writtenOpacity)) {
+      this.writtenOpacity = this.opacity;
+      this.root.style.opacity = this.opacity.toFixed(3);
+    }
+    const interactive = this.opacity > 0.01;
+    if (interactive !== this.writtenInteractive) {
+      this.writtenInteractive = interactive;
+      this.root.style.pointerEvents = interactive ? 'auto' : 'none';
+    }
+
+    // Fully faded out and not moving: nothing about the thumb can be seen, so
+    // there is no reason to compute or write it.
+    if (this.opacity <= 0) return;
 
     const limit = this.pane.limit;
     const viewport = window.innerHeight;
     const total = limit + viewport;
     const thumbRatio = total > 0 ? Math.max(MIN_THUMB_RATIO, viewport / total) : 1;
-    this.thumb.style.height = `${(thumbRatio * 100).toFixed(3)}%`;
+    if (differs(thumbRatio, this.writtenThumbRatio)) {
+      this.writtenThumbRatio = thumbRatio;
+      this.thumb.style.height = `${(thumbRatio * 100).toFixed(3)}%`;
+    }
+
     const p = limit > 0 ? fit(this.pane.scrollPixel, 0, limit, 0, 1) : 0;
-    this.thumb.style.transform = `translateY(${(p * (100 / thumbRatio - 100)).toFixed(3)}%)`;
+    const offset = p * (100 / thumbRatio - 100);
+    if (differs(offset, this.writtenOffset)) {
+      this.writtenOffset = offset;
+      this.thumb.style.transform = `translateY(${offset.toFixed(3)}%)`;
+    }
   }
 
   destroy(): void {

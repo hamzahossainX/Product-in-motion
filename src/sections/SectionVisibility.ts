@@ -36,7 +36,8 @@ export class SectionVisibility {
   /** Toggle only on change — writing the class every frame would thrash style. */
   update(): void {
     if (!this.enabled) return;
-    for (const entry of this.entries) {
+    for (let i = 0; i < this.entries.length; i++) {
+      const entry = this.entries[i]!;
       const shouldHide = !entry.range.isActive;
       if (shouldHide === entry.hidden) continue;
       entry.hidden = shouldHide;

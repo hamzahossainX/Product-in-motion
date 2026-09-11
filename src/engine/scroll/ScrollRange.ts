@@ -7,6 +7,7 @@
  * space and only re-measured when the content wrapper actually resizes.
  */
 import { fit } from '../../lib/math.ts';
+import type { DomGLRect } from './DomGLRect.ts';
 
 /** Extra viewport fraction counted as "active" on each side, so a section is
  *  awake slightly before it is visible and its reveal is never caught mid-way. */
@@ -30,6 +31,8 @@ export class ScrollRange {
   /** Cached document-space geometry, refreshed only on measure(). */
   private documentTop = 0;
   private documentHeight = 0;
+  private viewportLeft = 0;
+  private elementWidth = 0;
 
   constructor(element: HTMLElement) {
     this.element = element;
@@ -40,6 +43,32 @@ export class ScrollRange {
     const rect = this.element.getBoundingClientRect();
     this.documentTop = rect.top + scrollPixel;
     this.documentHeight = rect.height;
+    // Horizontal too, so an element used as a DOM anchor for 3D can be locked
+    // from the same measurement pass rather than a second observer.
+    this.viewportLeft = rect.left;
+    this.elementWidth = rect.width;
+  }
+
+  /** Scroll position at which this element's centre sits at the viewport's. */
+  centreScrollPixel(viewportHeight: number): number {
+    return this.documentTop + this.documentHeight * 0.5 - viewportHeight * 0.5;
+  }
+
+  /**
+   * Fill `out` with this element's current viewport box, in GL space.
+   *
+   * Pure arithmetic on the cached rect: the only thing that changes between
+   * frames is the scroll offset, so nothing here touches the DOM (rule 3 —
+   * the DOM drives the 3D, but it is read once per layout, not once per frame).
+   */
+  fillGLRect(out: DomGLRect, scrollPixel: number, viewportHeight: number): DomGLRect {
+    return out.setFromDom(
+      this.viewportLeft,
+      this.documentTop - scrollPixel,
+      this.elementWidth,
+      this.documentHeight,
+      viewportHeight,
+    );
   }
 
   /** Pure arithmetic on cached geometry. Safe to call every frame. */
@@ -108,10 +137,14 @@ export class ScrollRangeManager {
   update(scrollPixel: number): void {
     if (this.needsMeasure) {
       this.viewportHeight = window.innerHeight;
-      for (const range of this.ranges) range.measure(scrollPixel);
+      for (let i = 0; i < this.ranges.length; i++) this.ranges[i]!.measure(scrollPixel);
       this.needsMeasure = false;
     }
-    for (const range of this.ranges) range.update(scrollPixel, this.viewportHeight);
+    // Indexed, not for...of: this runs every frame and an iterator is an
+    // allocation (rule 17).
+    for (let i = 0; i < this.ranges.length; i++) {
+      this.ranges[i]!.update(scrollPixel, this.viewportHeight);
+    }
   }
 
   get all(): readonly ScrollRange[] {
