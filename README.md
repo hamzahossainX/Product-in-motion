@@ -490,7 +490,7 @@ every hashed asset URL needs that prefix.
 
 ### Which one?
 
-**Vercel**, for this project, on four counts:
+**Vercel**, for this project:
 
 | | Vercel | GitHub Pages |
 |---|---|---|

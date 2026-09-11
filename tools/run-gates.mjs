@@ -12,6 +12,8 @@
  * Node built-ins only, like the harnesses themselves.
  */
 import { spawn, execFileSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
+import { availableParallelism as cpuCount } from 'node:os';
 import { once } from 'node:events';
 
 const PORT = 5178;
@@ -95,6 +97,35 @@ function strayBrowsers() {
   }
 }
 
+/**
+ * Anything else on this machine that will distort a frame-time measurement.
+ *
+ * The frame-time checks in gates 7 and 8 measure a GPU that is assumed to be
+ * this page's alone. It very often is not: an ordinary desktop browser with a
+ * dozen tabs open holds the same GPU, and with one renderer at 50% CPU the
+ * desktop scroll drops from 350 frames to 180 and the check fails — on code
+ * that passes cleanly minutes earlier and minutes later.
+ *
+ * That failure is indistinguishable from a real regression unless the machine's
+ * state is on the record next to it, and chasing one costs hours. So print it
+ * up front, every run.
+ */
+function machineLoad() {
+  try {
+    const load = readFileSync('/proc/loadavg', 'utf8').split(' ')[0];
+    const cpus = cpuCount();
+    const table = execFileSync('ps', ['-eo', 'pcpu,args'], { encoding: 'utf8' }).split('\n');
+    const browsers = table.filter((line) =>
+      /chrom(e|ium)|firefox/i.test(line) && !line.includes('eraser-cdp-'));
+    const busiest = browsers
+      .map((line) => Number.parseFloat(line.trim().split(/\s+/)[0]) || 0)
+      .sort((a, b) => b - a)[0] ?? 0;
+    return { load: Number(load), cpus, otherBrowserProcesses: browsers.length, busiestPercent: busiest };
+  } catch {
+    return null;
+  }
+}
+
 const results = [];
 try {
   await waitForServer(gone.signal);
@@ -103,6 +134,18 @@ try {
   if (before > 0) {
     console.log(`\nwarning: ${before} browser processes are already running from a previous run.`);
     console.log('They compete for the GPU and will skew every frame-time check.\n');
+  }
+
+  const machine = machineLoad();
+  if (machine) {
+    console.log(`\nmachine: load ${machine.load.toFixed(2)} on ${machine.cpus} cores, ` +
+      `${machine.otherBrowserProcesses} other browser processes ` +
+      `(busiest ${machine.busiestPercent.toFixed(0)}% CPU)`);
+    if (machine.load > machine.cpus / 2 || machine.busiestPercent > 25) {
+      console.log('WARNING: this machine is busy. The frame-time checks in gates 7 and 8');
+      console.log('measure a GPU they assume is idle — expect false failures. Close other');
+      console.log('browsers and re-run before believing a frame-time result.');
+    }
   }
 
   for (const gate of gates) {
