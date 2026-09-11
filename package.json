@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "ERASER-1 — a vinyl eraser marketed with total sincerity as an open-weight AI model. A one-page WebGL site built on three.js, with no render framework and no post-processing library.",
+  "description": "A vinyl eraser, marketed with total sincerity as an open-weight AI model. A one-page WebGL site on raw three.js.",
   "keywords": [
     "webgl",
     "threejs",
