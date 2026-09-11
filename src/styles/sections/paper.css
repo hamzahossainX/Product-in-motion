@@ -137,3 +137,7 @@
   .chart__label { white-space: normal; }
   .paper__payoff { margin-top: var(--space-64); }
 }
+
+/* The preprint column is dense; the object settles in the right margin. */
+#paper-object-anchor { inset: 28% 1% auto 66%; height: calc(200 * var(--screen-unit)); }
+@media (max-width: 768px) { #paper-object-anchor { display: none; } }

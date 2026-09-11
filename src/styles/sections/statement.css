@@ -47,3 +47,7 @@
   .statement__event { flex-direction: row; align-items: baseline; gap: var(--space-16); }
   .statement__event > :first-child { flex: none; width: calc(56 * var(--screen-unit)); }
 }
+
+/* Copy runs wide here, so the object sits low and right of the paragraph. */
+#statement-object-anchor { inset: 46% 2% 6% 46%; }
+@media (max-width: 768px) { #statement-object-anchor { inset: auto 0 4% 0; height: calc(var(--vh) * 26); } }

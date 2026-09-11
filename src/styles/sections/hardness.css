@@ -86,3 +86,23 @@
   .hardness__copy,
   .hardness__control { grid-column: 1 / -1; }
 }
+
+/* The slider and its readouts own the lower half. */
+#hardness-object-anchor { inset: 12% 4% 46% 50%; }
+@media (max-width: 768px) { #hardness-object-anchor { inset: auto 0 auto 0; top: 18%; height: calc(var(--vh) * 20); } }
+
+/* A range input's default ring sits on the track and is easy to miss against
+   a dark background; this puts it around the whole control. */
+.hardness__slider:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-accent);
+  outline-offset: calc(4 * var(--screen-unit));
+}
+
+.hardness__readout {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-16);
+  margin-top: var(--space-16);
+  color: var(--color-text-dim);
+}
+.hardness__readout output { color: var(--color-white); font-variant-numeric: tabular-nums; }

@@ -71,7 +71,7 @@ button { background: none; border: 0; padding: 0; cursor: pointer; }
 ::selection { background: var(--color-accent); color: var(--color-black); }
 
 :focus-visible {
-  outline: var(--hairline) solid var(--color-accent);
+  outline: var(--focus-ring-width) solid var(--color-accent);
   outline-offset: calc(4 * var(--screen-unit));
 }
 
@@ -148,6 +148,23 @@ button { background: none; border: 0; padding: 0; cursor: pointer; }
   width: 100%;
   max-width: var(--inner-width);
   margin-inline: auto;
+}
+
+/* The box the 3D object is locked to inside a section (CLAUDE.md rule 3: the
+   DOM drives the 3D). Empty, unpainted, out of the a11y tree and out of the
+   flow — its only job is to be measured, so that the layout decides where the
+   object sits and the copy is never underneath it. Each section overrides the
+   inset for whichever part of its grid it leaves free. */
+.section__object {
+  position: absolute;
+  inset: 18% 4% 18% 52%;
+  pointer-events: none;
+}
+
+@media (max-width: 768px) {
+  /* One column: there is no free side, so the object takes the band between
+     the heading and the content below it. */
+  .section__object { inset: 26% 0 34% 0; }
 }
 
 /* A section index + title pair, set on a hairline. Used at the head of every

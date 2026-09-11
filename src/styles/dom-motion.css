@@ -1,0 +1,112 @@
+/* ============================================================================
+   dom-motion.css — the DOM-side motion layer: masked reveals, letter flippers,
+   the preloader and the custom cursor.
+   ========================================================================= */
+
+/* --------------------------------------------------------- text reveals -- */
+
+/* SplitText's mask wrappers — it names them by suffixing the split element's
+   class with "-mask" and sets `overflow: clip` inline. The rise happens inside
+   these, so a character or a line comes out from behind an edge rather than
+   fading in from nowhere. */
+.split-line-mask, .split-word-mask {
+  display: inline-block;
+  /* Descenders and diacritics live below the baseline, and `overflow: clip`
+     clips at the padding box — so without this the mask cuts the bottom off
+     every g, y and j. The negative margin gives the space back, leaving line
+     spacing unchanged. */
+  padding-bottom: 0.16em;
+  margin-bottom: -0.16em;
+  vertical-align: top;
+}
+
+.split-char, .split-word { display: inline-block; will-change: transform; }
+.split-line { display: block; will-change: transform; }
+
+/* ------------------------------------------------------ letter flippers -- */
+
+.is-flipper { display: inline-block; }
+
+/* The clip box. It wraps only the text run, so a padded control clips at the
+   text rather than at its padding — otherwise the clone one line below lands
+   inside the padding and the label reads twice. */
+.flip__inner {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  line-height: 1.1;
+}
+
+.flip__char {
+  position: relative;
+  display: inline-block;
+  white-space: pre;   /* a lone space in a span would otherwise collapse */
+  will-change: transform;
+}
+
+.flip__clone {
+  position: absolute;
+  left: 0;
+  top: 100%;
+  white-space: pre;
+}
+
+/* ------------------------------------------------------------ preloader -- */
+
+.preloader {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-preloader);
+  background: var(--color-bg-dark);
+  /* Opacity is written per frame by the loop, not transitioned by CSS: it has
+     to finish exactly when the load does. */
+  opacity: 1;
+}
+.preloader canvas { display: block; }
+
+/* --------------------------------------------------------------- cursor -- */
+
+.cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: var(--z-cursor);
+  display: grid;
+  place-items: center;
+  width: 0;
+  height: 0;
+  margin: 0;
+  border: var(--hairline) solid rgb(var(--cream-rgb) / .55);
+  border-radius: 50%;
+  color: var(--color-white);
+  opacity: 0;
+  pointer-events: none;
+  /* Centred on the pointer. The transform itself is written per frame, so this
+     offset has to be part of the element rather than part of the transform. */
+  translate: -50% -50%;
+  mix-blend-mode: difference;
+}
+
+.cursor--filled {
+  background: rgb(var(--accent-rgb) / .18);
+  border-color: rgb(var(--accent-rgb) / .8);
+}
+
+.cursor__label {
+  font-size: calc(10 * var(--screen-unit));
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* No pointer to follow, and no hover to flip into. */
+@media (pointer: coarse) {
+  .cursor { display: none; }
+}
+
+/* Reduced motion keeps every reveal at rest and legible, and drops the cursor
+   entirely — it is decoration that moves. */
+@media (prefers-reduced-motion: reduce) {
+  .cursor { display: none; }
+  .split-line-mask, .split-word-mask { overflow: visible; }
+}

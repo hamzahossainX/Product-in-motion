@@ -46,3 +46,8 @@
   .showcase__stat { grid-column: 1 / -1; flex-direction: row; align-items: baseline; justify-content: space-between; gap: var(--space-16); }
   .showcase__note { margin-top: var(--space-32); }
 }
+
+/* The headline is the whole left half; the object gets the right third and
+   stays clear of the stats row. */
+#showcase-object-anchor { inset: 16% 4% 44% 62%; }
+@media (max-width: 768px) { #showcase-object-anchor { inset: auto 0 6% 0; height: calc(var(--vh) * 24); } }

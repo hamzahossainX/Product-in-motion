@@ -44,7 +44,11 @@
   appearance: none;
 }
 .site-footer__input::placeholder { color: var(--color-text-faint); }
-.site-footer__input:focus { outline: none; border-bottom-color: var(--color-accent); }
+/* The border change alone is not a focus indicator: it is one colour shift on
+   a 1px edge. Keyboard focus gets a real ring; a pointer click does not, which
+   is what :focus-visible is for. */
+.site-footer__input:focus { border-bottom-color: var(--color-accent); }
+.site-footer__input:focus:not(:focus-visible) { outline: none; }
 
 .site-footer__cols {
   grid-column: 13 / span 4;
@@ -79,3 +83,7 @@
   .site-footer__cols { grid-column: 1 / -1; }
   .site-footer__legal { flex-direction: column; gap: var(--space-16); }
 }
+
+/* Replaces the field once the form is submitted. Nothing was sent anywhere;
+   this is the entire transaction. */
+.site-footer__status { margin-top: var(--space-8); }

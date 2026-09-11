@@ -78,3 +78,10 @@
   .abrasion__figure { grid-column: 1 / -1; grid-row: auto; }
   .abrasion__crosshair { width: calc(96 * var(--screen-unit)); height: calc(96 * var(--screen-unit)); }
 }
+
+/* The magnifier is operable, so it has to show keyboard focus. Its own border
+   is the affordance, so the ring goes outside it rather than replacing it. */
+#abrasion-zoom-box:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-accent);
+  outline-offset: calc(3 * var(--screen-unit));
+}

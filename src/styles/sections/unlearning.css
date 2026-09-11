@@ -74,3 +74,22 @@
   .unlearning__step > :first-child { width: calc(54 * var(--screen-unit)); }
   .unlearning__input { font-size: var(--h3); }
 }
+
+/* The drag surface, and the box the 3D sheet is locked to. Transparent: what
+   is seen through it is the render. The dashed edge is the affordance — the
+   reader has to know the region is draggable without being told twice. */
+.unlearning__sheet {
+  position: absolute;
+  inset: 26% 30% 30% 30%;
+  border: var(--hairline) dashed rgb(var(--cream-rgb) / .22);
+  border-radius: calc(4 * var(--screen-unit));
+  cursor: grab;
+  touch-action: none;   /* the drag is the interaction; do not scroll instead */
+}
+.unlearning__sheet:active { cursor: grabbing; border-color: rgb(var(--accent-rgb) / .5); }
+
+.unlearning__erase { margin-top: var(--space-16); align-self: flex-start; }
+
+@media (max-width: 768px) {
+  .unlearning__sheet { inset: auto 0 auto 0; top: 20%; height: calc(var(--vh) * 22); }
+}

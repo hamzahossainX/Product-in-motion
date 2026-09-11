@@ -108,3 +108,8 @@
   .configurator__table tbody th { width: 28%; }
   .configurator__table td { width: 24%; }
 }
+
+/* The variant cards and the comparison table fill the section below the head,
+   so the object is confined to the band beside the intro copy. */
+#configurator-object-anchor { inset: 25% 3% auto 56%; height: calc(220 * var(--screen-unit)); }
+@media (max-width: 768px) { #configurator-object-anchor { position: relative; inset: auto; height: calc(var(--vh) * 22); margin-bottom: var(--space-32); } }

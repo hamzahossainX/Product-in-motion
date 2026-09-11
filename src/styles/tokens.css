@@ -124,6 +124,13 @@
   --z-content: 1;
   --z-header: 20;
   --z-indicator: 30;
+  /* A hairline is 0.55px at 1440 — not a focus indicator anyone can see.
+     WCAG 2.2 wants an indicator with real area and real contrast. */
+  --focus-ring-width: max(2px, calc(2 * var(--screen-unit)));
+
+  --z-cursor: 60;
+  --z-preloader: 80;
+  --z-debug: 100;
 }
 
 /* --- mobile: one breakpoint, 768px. No tablet breakpoint. CLAUDE.md rule 14.

@@ -29,6 +29,18 @@
   max-width: calc(1420 * var(--screen-unit));
 }
 
+/* The zone the eraser is locked to — the uninterrupted middle third, held to
+   the right so it never lands on the lede. Purely a measuring box: no paint,
+   no pointer target, nothing in the a11y tree. */
+.hero__object {
+  flex: 1 1 auto;
+  align-self: flex-end;
+  width: min(74%, calc(880 * var(--screen-unit)));
+  min-height: calc(200 * var(--screen-unit));
+  margin-right: calc(40 * var(--screen-unit));
+  pointer-events: none;
+}
+
 .hero__bottom {
   display: grid;
   grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
@@ -82,4 +94,11 @@
   .hero__spec dd { grid-row: auto; margin-bottom: var(--space-8); }
   .hero__scroll { grid-column: 1 / -1; align-items: flex-start; text-align: left; }
   .hero__scroll-rule { height: calc(28 * var(--screen-unit)); }
+  /* Nothing to clear on one column, so the object takes the full width. */
+  .hero__object {
+    align-self: stretch;
+    width: 100%;
+    margin-right: 0;
+    min-height: calc(var(--vh) * 24);
+  }
 }
