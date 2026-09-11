@@ -130,8 +130,8 @@ ones. That is a deliberate ceiling, and the smallest useful supply-chain
 control this project has.
 
 - `npm audit` is run in CI on every push and pull request.
-- Dependabot opens grouped update pull requests weekly
-  ([`.github/dependabot.yml`](.github/dependabot.yml)).
+- Dependabot opens grouped update pull requests monthly — one per ecosystem,
+  not one per package ([`.github/dependabot.yml`](.github/dependabot.yml)).
 - GitHub Actions are pinned by major version and run with a read-only
   `GITHUB_TOKEN` except where a deployment explicitly needs more.
 - `package-lock.json` is committed, and CI installs with `npm ci`, so a build
