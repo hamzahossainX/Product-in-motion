@@ -14,6 +14,18 @@ export function isDebugEnabled(): boolean {
   return new URLSearchParams(window.location.search).get('debug') === '1';
 }
 
+/**
+ * `?probe=1` exposes the same handle with no overlay and no GUI.
+ *
+ * The debug panels build strings and touch the DOM every frame, which is fine
+ * to look at and useless to measure against: a frame-loop allocation test run
+ * with them on measures them. This flag is how the gate harness gets at the
+ * app without changing what it is measuring.
+ */
+export function isProbeEnabled(): boolean {
+  return new URLSearchParams(window.location.search).get('probe') === '1';
+}
+
 export class DebugOverlay {
   private readonly root: HTMLElement;
   private readonly body: HTMLElement;
