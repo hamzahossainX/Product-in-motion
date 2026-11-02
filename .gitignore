@@ -40,3 +40,4 @@ oryzo-*.md
 # public site URL and no secrets).
 .env.local
 .env.*.local
+.vercel

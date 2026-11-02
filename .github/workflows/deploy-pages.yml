@@ -5,8 +5,8 @@ name: Deploy to GitHub Pages
 # every push. Flip `push:` on if you want Pages to track main.
 on:
   workflow_dispatch:
-  # push:
-  #   branches: [main]
+  push:
+    branches: [main]
 
 permissions:
   contents: read
@@ -44,6 +44,8 @@ jobs:
         run: npm run build
 
       - uses: actions/configure-pages@v6
+        with:
+          enablement: true
       - uses: actions/upload-pages-artifact@v5
         with:
           path: dist
